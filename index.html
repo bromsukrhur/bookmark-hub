@@ -552,7 +552,9 @@ async function saveToGitHub() {
       const res = await fetch(GH_API, { headers: { 'Authorization': `token ${getGHToken()}` } });
       if (res.ok) { const d = await res.json(); ghSha = d.sha; }
     }
-    const body = { message: 'update bookmarks', content: btoa(unescape(encodeURIComponent(JSON.stringify(sites, null, 2)))), sha: ghSha };
+    const json = JSON.stringify(sites, null, 2);
+    const encoded = btoa(unescape(encodeURIComponent(json)));
+    const body = { message: 'update bookmarks', content: encoded, sha: ghSha };
     const res = await fetch(GH_API, {
       method: 'PUT',
       headers: { 'Authorization': `token ${getGHToken()}`, 'Content-Type': 'application/json' },
