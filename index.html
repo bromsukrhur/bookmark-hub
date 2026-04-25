@@ -535,9 +535,7 @@ async function loadFromGitHub() {
     if (!res.ok) return false;
     const data = await res.json();
     ghSha = data.sha;
-    const raw = data.content.replace(/\n/g, '');
-    const bytes = Uint8Array.from(atob(raw), c => c.charCodeAt(0));
-    const content = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    const content = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
     if (Array.isArray(content) && content.length > 0) {
       sites = content;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
