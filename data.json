@@ -1,9 +1,50 @@
 [
-  {"name":"Google","url":"https://google.com","cat":"기타","isDefault":true},
-  {"name":"GitHub","url":"https://github.com","cat":"개발","isDefault":true},
-  {"name":"YouTube","url":"https://youtube.com","cat":"엔터","isDefault":true},
-  {"name":"Naver","url":"https://naver.com","cat":"뉴스","isDefault":true},
-  {"name":"Claude","url":"https://claude.ai","cat":"업무","isDefault":true},
-  {"name":"Coupang","url":"https://coupang.com","cat":"쇼핑","isDefault":true},
-  {"name":"다음","url":"https://daum.net","cat":"기타","isDefault":false}
+  {
+    "name": "Google",
+    "url": "https://google.com",
+    "cat": "기타",
+    "isDefault": true
+  },
+  {
+    "name": "GitHub",
+    "url": "https://github.com",
+    "cat": "개발",
+    "isDefault": true
+  },
+  {
+    "name": "YouTube",
+    "url": "https://youtube.com",
+    "cat": "엔터",
+    "isDefault": true
+  },
+  {
+    "name": "Naver",
+    "url": "https://naver.com",
+    "cat": "뉴스",
+    "isDefault": true
+  },
+  {
+    "name": "Claude",
+    "url": "https://claude.ai",
+    "cat": "업무",
+    "isDefault": true
+  },
+  {
+    "name": "Coupang",
+    "url": "https://coupang.com",
+    "cat": "쇼핑",
+    "isDefault": true
+  },
+  {
+    "name": "다음",
+    "url": "https://daum.net",
+    "cat": "기타",
+    "isDefault": false
+  },
+  {
+    "name": "밍키",
+    "url": "https://mingky03.net/movie/194b6f17f3?page=3",
+    "cat": "개발",
+    "isDefault": false
+  }
 ]
