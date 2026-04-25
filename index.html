@@ -254,7 +254,9 @@
   <div class="container">
     <header>
       <div class="logo">북마크<span>.</span></div>
-      <div class="header-btns">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;justify-content:flex-end;">
+        <span id="sync-status" style="font-size:11px;font-family:'Gmarket Sans',sans-serif;"></span>
+        <div class="header-btns">
         <button class="hbtn hbtn-lock" onclick="openPwModal()" title="비밀번호 변경">🔑</button>
         <button class="hbtn hbtn-lock" onclick="lockApp()" title="잠금">🔒</button>
         <button class="hbtn hbtn-edit" id="edit-toggle-btn" onclick="toggleEditMode()">
@@ -265,6 +267,7 @@
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#111" stroke-width="2.2" stroke-linecap="round"/></svg>
           추가
         </button>
+      </div>
       </div>
     </header>
 
@@ -349,7 +352,7 @@ const DEFAULT_SITES = [
   { name: 'Coupang', url: 'https://coupang.com', cat: '쇼핑', isDefault: true },
 ];
 
-let sites = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || DEFAULT_SITES;
+let sites = DEFAULT_SITES;
 let activeCat = '전체';
 let editIndex = -1;
 let editMode = false;
@@ -416,7 +419,7 @@ function tryUnlock() {
     localStorage.setItem(SESSION_KEY, '1');
     document.getElementById('lock-screen').classList.add('hidden');
     document.getElementById('app').classList.add('visible');
-    render();
+    initApp();
   } else {
     err.textContent = '비밀번호가 올바르지 않아요';
     inp.classList.add('error');
@@ -444,18 +447,94 @@ function togglePw() {
 }
 
 /* ── App init ── */
-if (checkSession()) {
+async function initApp() {
   document.getElementById('lock-screen').classList.add('hidden');
   document.getElementById('app').classList.add('visible');
+  setSyncStatus('saving');
+  const loaded = await loadFromGitHub();
+  if (!loaded) {
+    // GitHub 실패 시에만 localStorage 폴백
+    const local = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (local && local.length > 0) sites = local;
+  }
+  setSyncStatus('saved');
   render();
+}
+
+if (checkSession()) {
+  initApp();
 }
 
 document.getElementById('lock-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') tryUnlock();
 });
 
-/* ── Data ── */
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(sites)); }
+/* ── GitHub 동기화 설정 ── */
+const GH_TOKEN  = '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';
+const GH_OWNER  = 'bromsukrhur';
+const GH_REPO   = 'bookmark-hub';
+const GH_FILE   = 'data.json';
+const GH_API    = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+
+let ghSha = null; // 파일 SHA (업데이트 시 필요)
+let syncStatus = 'idle'; // idle | saving | error
+
+function setSyncStatus(status, msg) {
+  syncStatus = status;
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  if (status === 'saving') { el.textContent = '⟳ 저장 중...'; el.style.color = 'var(--text-muted)'; }
+  else if (status === 'saved') { el.textContent = '✓ 저장됨'; el.style.color = 'var(--accent)'; setTimeout(() => { el.textContent = ''; }, 2000); }
+  else if (status === 'error') { el.textContent = '⚠ 저장 실패'; el.style.color = 'var(--red)'; }
+}
+
+async function loadFromGitHub() {
+  try {
+    const res = await fetch(GH_API + '?t=' + Date.now(), {
+      headers: { 'Authorization': `token ${GH_TOKEN}` }
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    ghSha = data.sha;
+    const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+    if (Array.isArray(content)) {
+      sites = content.length > 0 ? content : DEFAULT_SITES;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
+    }
+    return true;
+  } catch(e) { return false; }
+}
+
+async function saveToGitHub() {
+  setSyncStatus('saving');
+  try {
+    // SHA 없으면 먼저 가져오기
+    if (!ghSha) {
+      const res = await fetch(GH_API, { headers: { 'Authorization': `token ${GH_TOKEN}` } });
+      if (res.ok) { const d = await res.json(); ghSha = d.sha; }
+    }
+    const body = { message: 'update bookmarks', content: btoa(unescape(encodeURIComponent(JSON.stringify(sites, null, 2)))), sha: ghSha };
+    const res = await fetch(GH_API, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${GH_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    ghSha = data.content.sha;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
+    setSyncStatus('saved');
+  } catch(e) {
+    setSyncStatus('error');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
+  saveToGitHub();
+}
+
 function getFavicon(url) {
   try { return 'https://www.google.com/s2/favicons?sz=64&domain=' + new URL(url).hostname; }
   catch(e) { return ''; }
