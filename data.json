@@ -58,5 +58,11 @@
     "url": "https://missav.ws/dm27/ko/mdyd-913-uncensored-leak",
     "cat": "개발",
     "isDefault": false
+  },
+  {
+    "name": "wms",
+    "url": "https://sso.mk.co.kr/auth/realms/mcp-khan-realm/protocol/openid-connect/auth?client_id=mcp-khan-wms&redirect_uri=https%3A%2F%2Fwms.mk.co.kr&state=4077d3a4-3d91-4548-b91e-4c2d70b2129e&response_mode=fragment&response_type=code&scope=openid&nonce=5c7fbfe6-a74e-4369-aa6c-b01fd499de39",
+    "cat": "기타",
+    "isDefault": false
   }
 ]
