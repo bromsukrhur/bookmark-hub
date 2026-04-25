@@ -257,7 +257,7 @@
       <div style="display:flex;align-items:center;gap:12px;flex:1;justify-content:flex-end;">
         <span id="sync-status" style="font-size:11px;font-family:'Gmarket Sans',sans-serif;"></span>
         <div class="header-btns">
-        <button class="hbtn hbtn-lock" onclick="openPwModal()" title="비밀번호 변경">🔑</button>
+        <button class="hbtn hbtn-lock" onclick="openTokenModal()" title="GitHub 토큰 설정">🔑</button>
         <button class="hbtn hbtn-lock" onclick="lockApp()" title="잠금">🔒</button>
         <button class="hbtn hbtn-edit" id="edit-toggle-btn" onclick="toggleEditMode()">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5l2 2-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
@@ -309,6 +309,27 @@
   </div>
 </div>
 
+<!-- Token Modal -->
+<div class="overlay" id="token-overlay" onclick="tokenOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span>GitHub 토큰 설정</span>
+      <span class="modal-badge" style="background:rgba(200,240,74,0.12);color:var(--accent)">🔑</span>
+    </div>
+    <label>Personal Access Token</label>
+    <div class="lock-input-wrap">
+      <input id="token-input" type="password" placeholder="ghp_..." autocomplete="off" style="width:100%;padding:11px 44px 11px 12px;font-size:14px;font-family:'Noto Sans KR',sans-serif;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);outline:none;" />
+      <button class="lock-eye" onclick="togglePwField('token-input','token-eye')" tabindex="-1" id="token-eye">👁</button>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">토큰은 이 브라우저에만 저장되며 코드에 포함되지 않아요</div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeTokenModal()">취소</button>
+      <button class="btn-ok" onclick="saveToken()">저장하기</button>
+    </div>
+  </div>
+</div>
+
 <!-- Site Modal -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
   <div class="modal">
@@ -352,12 +373,29 @@ const DEFAULT_SITES = [
   { name: 'Coupang', url: 'https://coupang.com', cat: '쇼핑', isDefault: true },
 ];
 
-let sites = DEFAULT_SITES;
+let sites = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || DEFAULT_SITES;
 let activeCat = '전체';
 let editIndex = -1;
 let editMode = false;
 let dragSrcIndex = null;
 let pwVisible = false;
+
+/* ── Token Modal ── */
+function openTokenModal(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) {
+  document.getElementById('token-input').value = getGHToken();
+  document.getElementById('token-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('token-input').focus(), 300);
+}
+function closeTokenModal() { document.getElementById('token-overlay').classList.remove('open'); }
+function tokenOverlayClick(e) { if (e.target === e.currentTarget) closeTokenModal(); }
+function saveToken() {
+  const token = document.getElementById('token-input').value.trim();
+  if (!token) return;
+  localStorage.setItem(GH_TOKEN_KEY, token);
+  closeTokenModal();
+  ghSha = null;
+  initApp();
+}
 
 /* ── Password Change Modal ── */
 function openPwModal() {
@@ -450,10 +488,10 @@ function togglePw() {
 async function initApp() {
   document.getElementById('lock-screen').classList.add('hidden');
   document.getElementById('app').classList.add('visible');
+  if (!getGHToken()) { render(); openTokenModal(); return; }
   setSyncStatus('saving');
   const loaded = await loadFromGitHub();
   if (!loaded) {
-    // GitHub 실패 시에만 localStorage 폴백
     const local = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
     if (local && local.length > 0) sites = local;
   }
@@ -470,7 +508,8 @@ document.getElementById('lock-input').addEventListener('keydown', e => {
 });
 
 /* ── GitHub 동기화 설정 ── */
-const GH_TOKEN  = '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';
+const GH_TOKEN_KEY = 'bhub-gh-token';
+function getGHToken() { return localStorage.getItem(GH_TOKEN_KEY) || ''; }
 const GH_OWNER  = 'bromsukrhur';
 const GH_REPO   = 'bookmark-hub';
 const GH_FILE   = 'data.json';
@@ -491,14 +530,14 @@ function setSyncStatus(status, msg) {
 async function loadFromGitHub() {
   try {
     const res = await fetch(GH_API + '?t=' + Date.now(), {
-      headers: { 'Authorization': `token ${GH_TOKEN}` }
+      headers: { 'Authorization': `token ${getGHToken()}` }
     });
     if (!res.ok) return false;
     const data = await res.json();
     ghSha = data.sha;
     const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
-    if (Array.isArray(content)) {
-      sites = content.length > 0 ? content : DEFAULT_SITES;
+    if (Array.isArray(content) && content.length > 0) {
+      sites = content;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
     }
     return true;
@@ -510,13 +549,13 @@ async function saveToGitHub() {
   try {
     // SHA 없으면 먼저 가져오기
     if (!ghSha) {
-      const res = await fetch(GH_API, { headers: { 'Authorization': `token ${GH_TOKEN}` } });
+      const res = await fetch(GH_API, { headers: { 'Authorization': `token ${getGHToken()}` } });
       if (res.ok) { const d = await res.json(); ghSha = d.sha; }
     }
     const body = { message: 'update bookmarks', content: btoa(unescape(encodeURIComponent(JSON.stringify(sites, null, 2)))), sha: ghSha };
     const res = await fetch(GH_API, {
       method: 'PUT',
-      headers: { 'Authorization': `token ${GH_TOKEN}`, 'Content-Type': 'application/json' },
+      headers: { 'Authorization': `token ${getGHToken()}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error();
