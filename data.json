@@ -1,8 +1,44 @@
 [
-  {"name":"Google","url":"https://google.com","cat":"기타","isDefault":true},
-  {"name":"GitHub","url":"https://github.com","cat":"개발","isDefault":true},
-  {"name":"YouTube","url":"https://youtube.com","cat":"엔터","isDefault":true},
-  {"name":"Naver","url":"https://naver.com","cat":"뉴스","isDefault":true},
-  {"name":"Claude","url":"https://claude.ai","cat":"업무","isDefault":true},
-  {"name":"Coupang","url":"https://coupang.com","cat":"쇼핑","isDefault":true}
+  {
+    "name": "Google",
+    "url": "https://google.com",
+    "cat": "ê¸°í",
+    "isDefault": true
+  },
+  {
+    "name": "GitHub",
+    "url": "https://github.com",
+    "cat": "ê°ë°",
+    "isDefault": true
+  },
+  {
+    "name": "YouTube",
+    "url": "https://youtube.com",
+    "cat": "ìí°",
+    "isDefault": true
+  },
+  {
+    "name": "Naver",
+    "url": "https://naver.com",
+    "cat": "ë´ì¤",
+    "isDefault": true
+  },
+  {
+    "name": "Claude",
+    "url": "https://claude.ai",
+    "cat": "ìë¬´",
+    "isDefault": true
+  },
+  {
+    "name": "Coupang",
+    "url": "https://coupang.com",
+    "cat": "ì¼í",
+    "isDefault": true
+  },
+  {
+    "name": "다음",
+    "url": "https://www.daum.net",
+    "cat": "기타",
+    "isDefault": false
+  }
 ]
