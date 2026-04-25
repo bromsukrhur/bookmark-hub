@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>내 북마크 허브</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f11;
+    --surface: #18181c;
+    --surface2: #222228;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #f0f0f2;
+    --text-muted: #888890;
+    --text-faint: #44444c;
+    --accent: #c8f04a;
+    --accent-dim: rgba(200,240,74,0.12);
+    --red: #ff5f5f;
+    --red-dim: rgba(255,95,95,0.12);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100dvh;
+    padding: 40px 24px 80px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  /* ── Lock Screen ── */
+  #lock-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999;
+    padding: 24px;
+  }
+  #lock-screen.hidden { display: none; }
+
+  .lock-box {
+    background: var(--surface);
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+  }
+  .lock-icon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 22px;
+  }
+  .lock-title {
+    font-family: 'Gmarket Sans', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .lock-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .lock-input-wrap {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .lock-input {
+    width: 100%;
+    padding: 12px 44px 12px 16px;
+    font-size: 16px;
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+  .lock-input:focus { border-color: var(--accent); }
+  .lock-input.error { border-color: var(--red); animation: shake 0.3s ease; }
+  .lock-input-wrap input { padding-right: 44px; }
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: 16px; padding: 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lock-eye:hover { color: var(--text); }
+  .lock-error {
+    font-size: 12px; color: var(--red);
+    margin-bottom: 16px; min-height: 18px;
+    font-family: 'Gmarket Sans', sans-serif;
+  }
+  .lock-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: #111;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Gmarket Sans', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .lock-btn:hover { opacity: 0.88; }
+  .lock-btn:active { transform: scale(0.97); }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* ── Main App (hidden until unlocked) ── */
+  #app { display: none; }
+  #app.visible { display: block; }
+
+  /* Header */
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; gap: 12px; }
+  .logo { font-family: 'Gmarket Sans', sans-serif; font-weight: 700; font-size: clamp(20px, 4vw, 28px); letter-spacing: -0.5px; color: var(--text); flex-shrink: 0; }
+  .logo span { color: var(--accent); }
+
+  .header-btns { display: flex; gap: 8px; flex-shrink: 0; }
+  .hbtn { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border: none; border-radius: var(--radius-sm); font-family: 'Gmarket Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.15s, transform 0.1s; white-space: nowrap; -webkit-user-select: none; user-select: none; }
+  .hbtn:active { transform: scale(0.96); opacity: 0.8; }
+  .hbtn-add { background: var(--accent); color: #111; }
+  .hbtn-add:hover { opacity: 0.88; }
+  .hbtn-edit { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+  .hbtn-edit:hover { color: var(--text); border-color: var(--border-hover); }
+  .hbtn-edit.active { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,240,74,0.3); }
+  .hbtn-lock { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+  .hbtn-lock:hover { color: var(--text); border-color: var(--border-hover); }
+
+  /* Categories */
+  .cats-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin: 0 -24px 16px; padding: 0 24px; }
+  .cats-wrap::-webkit-scrollbar { display: none; }
+  .cats { display: flex; gap: 8px; width: max-content; padding-bottom: 2px; }
+  .cat-btn { padding: 7px 16px; border-radius: 999px; font-size: 12px; font-family: 'Gmarket Sans', sans-serif; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.15s; white-space: nowrap; -webkit-user-select: none; user-select: none; }
+  .cat-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .cat-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  .count { font-size: 12px; color: var(--text-faint); margin-bottom: 16px; font-family: 'Gmarket Sans', sans-serif; }
+  .count strong { color: var(--accent); font-weight: 700; }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 540px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; } }
+  @media (max-width: 360px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Card */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 12px 12px; text-decoration: none; display: block; position: relative; transition: border-color 0.15s, background 0.15s, transform 0.15s; animation: fadeIn 0.2s ease both; -webkit-user-select: none; user-select: none; cursor: pointer; }
+  .card:not(.edit-mode):hover { border-color: var(--border-hover); background: var(--surface2); }
+  @media (hover: none) {
+    .card:not(.edit-mode):active { background: var(--surface2); border-color: var(--border-hover); transform: scale(0.97); }
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card.edit-mode { cursor: grab; border-color: var(--border-hover); }
+  .card.edit-mode:active { cursor: grabbing; }
+  .card.dragging { opacity: 0.4; border: 1px dashed var(--accent); background: var(--accent-dim); }
+  .card.drag-over { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+
+  .card-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--surface2); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden; font-size: 16px; }
+  .card-icon img { width: 22px; height: 22px; object-fit: contain; }
+  .card-name { font-family: 'Gmarket Sans', sans-serif; font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-host { font-size: 10px; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; }
+  .card-tag { display: inline-block; font-size: 9px; font-family: 'Gmarket Sans', sans-serif; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-muted); }
+
+  .card-actions { position: absolute; top: 7px; right: 7px; display: none; gap: 3px; z-index: 2; }
+  .card:hover .card-actions, .card.edit-mode .card-actions { display: flex; }
+  @media (hover: none) { .card.edit-mode .card-actions { display: flex; } }
+
+  .card-action-btn { width: 20px; height: 20px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.1s; line-height: 1; -webkit-user-select: none; user-select: none; }
+  .card-action-btn.edit-btn:hover, .card-action-btn.edit-btn:active { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,240,74,0.3); }
+  .card-action-btn.del-btn:hover, .card-action-btn.del-btn:active { background: var(--red-dim); color: var(--red); border-color: rgba(255,95,95,0.3); }
+
+  .drag-handle { position: absolute; top: 7px; left: 7px; display: none; width: 16px; height: 16px; align-items: center; justify-content: center; color: var(--text-faint); font-size: 10px; cursor: grab; }
+  .card.edit-mode .drag-handle { display: flex; }
+
+  .edit-hint { display: none; background: var(--accent-dim); border: 1px solid rgba(200,240,74,0.2); border-radius: var(--radius-sm); padding: 8px 14px; margin-bottom: 16px; font-size: 12px; font-family: 'Gmarket Sans', sans-serif; color: var(--accent); }
+  .edit-hint.show { display: block; }
+
+  .empty { grid-column: 1/-1; text-align: center; padding: 60px 0; color: var(--text-faint); font-size: 14px; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.65); display: flex; align-items: flex-end; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding: 0; }
+  .overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: var(--surface); border: 1px solid var(--border-hover); border-radius: var(--radius) var(--radius) 0 0; padding: 24px 24px 36px; width: 100%; max-width: 480px; transform: translateY(40px); transition: transform 0.25s cubic-bezier(0.34, 1.1, 0.64, 1); }
+  .overlay.open .modal { transform: translateY(0); }
+  @media (min-width: 600px) {
+    .overlay { align-items: center; padding: 24px; }
+    .modal { border-radius: var(--radius); max-width: 360px; padding: 28px; transform: translateY(16px); }
+  }
+  .modal-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border-hover); margin: 0 auto 20px; }
+  @media (min-width: 600px) { .modal-handle { display: none; } }
+  .modal-title { font-family: 'Gmarket Sans', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 20px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .modal-badge { font-size: 10px; padding: 3px 8px; border-radius: 999px; font-weight: 500; }
+  .badge-new { background: var(--accent-dim); color: var(--accent); }
+  .badge-edit { background: rgba(100,160,255,0.12); color: #64a0ff; }
+  .modal label { display: block; font-size: 11px; font-family: 'Gmarket Sans', sans-serif; color: var(--text-muted); margin-bottom: 6px; margin-top: 14px; }
+  .modal input, .modal select { width: 100%; padding: 11px 12px; font-size: 16px; font-family: 'Noto Sans KR', sans-serif; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); outline: none; transition: border-color 0.15s; -webkit-appearance: none; appearance: none; }
+  .modal input:focus, .modal select:focus { border-color: var(--accent); }
+  .modal select { background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888890' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-color: var(--surface2); padding-right: 32px; }
+  .modal select option { background: #222228; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-btns button { flex: 1; padding: 13px; border-radius: var(--radius-sm); font-family: 'Gmarket Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; border: none; -webkit-user-select: none; user-select: none; }
+  .btn-ok { background: var(--accent); color: #111; }
+  .btn-ok:hover { opacity: 0.85; }
+  .btn-cancel { background: var(--surface2); color: var(--text-muted); }
+
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    body { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+    .modal { padding-bottom: calc(36px + env(safe-area-inset-bottom)); }
+  }
+  @media (min-width: 600px) and (max-width: 900px) { body { padding: 36px 32px 80px; } }
+  @media (min-width: 900px) { body { padding: 48px 40px 80px; } }
+</style>
+</head>
+<body>
+
+<!-- Lock Screen -->
+<div id="lock-screen">
+  <div class="lock-box">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">북마크 허브</div>
+    <div class="lock-sub">비밀번호를 입력해주세요</div>
+    <div class="lock-input-wrap">
+      <input class="lock-input" id="lock-input" type="password" placeholder="비밀번호" autocomplete="current-password" />
+      <button class="lock-eye" id="lock-eye" onclick="togglePw()" tabindex="-1">👁</button>
+    </div>
+    <div class="lock-error" id="lock-error"></div>
+    <button class="lock-btn" onclick="tryUnlock()">입장하기</button>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="app">
+  <div class="container">
+    <header>
+      <div class="logo">북마크<span>.</span></div>
+      <div class="header-btns">
+        <button class="hbtn hbtn-lock" onclick="openPwModal()" title="비밀번호 변경">🔑</button>
+        <button class="hbtn hbtn-lock" onclick="lockApp()" title="잠금">🔒</button>
+        <button class="hbtn hbtn-edit" id="edit-toggle-btn" onclick="toggleEditMode()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5l2 2-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          <span id="edit-btn-text">편집</span>
+        </button>
+        <button class="hbtn hbtn-add" onclick="openModal()">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#111" stroke-width="2.2" stroke-linecap="round"/></svg>
+          추가
+        </button>
+      </div>
+    </header>
+
+    <div class="edit-hint" id="edit-hint">✦ 편집 모드 — 드래그로 순서 변경, ✎ 수정, ✕ 삭제 (기본 사이트는 삭제 불가)</div>
+    <div class="cats-wrap"><div class="cats" id="cats"></div></div>
+    <div class="count" id="count"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<!-- Password Change Modal -->
+<div class="overlay" id="pw-overlay" onclick="pwOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span>비밀번호 변경</span>
+      <span class="modal-badge" style="background:rgba(100,160,255,0.12);color:#64a0ff">🔑</span>
+    </div>
+    <label>현재 비밀번호</label>
+    <div class="lock-input-wrap">
+      <input id="pw-current" type="password" placeholder="현재 비밀번호" autocomplete="current-password" />
+      <button class="lock-eye" onclick="togglePwField('pw-current','pw-eye-1')" tabindex="-1" id="pw-eye-1">👁</button>
+    </div>
+    <label>새 비밀번호</label>
+    <div class="lock-input-wrap">
+      <input id="pw-new" type="password" placeholder="새 비밀번호" autocomplete="new-password" />
+      <button class="lock-eye" onclick="togglePwField('pw-new','pw-eye-2')" tabindex="-1" id="pw-eye-2">👁</button>
+    </div>
+    <label>새 비밀번호 확인</label>
+    <div class="lock-input-wrap">
+      <input id="pw-confirm" type="password" placeholder="새 비밀번호 재입력" autocomplete="new-password" />
+      <button class="lock-eye" onclick="togglePwField('pw-confirm','pw-eye-3')" tabindex="-1" id="pw-eye-3">👁</button>
+    </div>
+    <div class="lock-error" id="pw-error"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closePwModal()">취소</button>
+      <button class="btn-ok" onclick="changePassword()">변경하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Site Modal -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span id="modal-title-text">사이트 추가</span>
+      <span class="modal-badge badge-new" id="modal-badge">NEW</span>
+    </div>
+    <label>이름</label>
+    <input id="inp-name" placeholder="예: GitHub" autocomplete="off" />
+    <label>URL</label>
+    <input id="inp-url" placeholder="https://..." type="url" autocomplete="off" inputmode="url" />
+    <label>카테고리</label>
+    <select id="inp-cat">
+      <option>업무</option><option>개발</option><option>뉴스</option>
+      <option>쇼핑</option><option>엔터</option><option>기타</option>
+    </select>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-ok" id="modal-confirm-btn" onclick="confirmModal()">추가하기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 비밀번호 ──
+const PW_KEY = 'bhub-pw';
+const SESSION_KEY = 'bhub-auth';
+const STORAGE_KEY = 'bookmark-hub-v2';
+
+function getPassword() {
+  return localStorage.getItem(PW_KEY) || 'zmffhem4.6%';
+}
+
+const DEFAULT_SITES = [
+  { name: 'Google',  url: 'https://google.com',  cat: '기타', isDefault: true },
+  { name: 'GitHub',  url: 'https://github.com',  cat: '개발', isDefault: true },
+  { name: 'YouTube', url: 'https://youtube.com', cat: '엔터', isDefault: true },
+  { name: 'Naver',   url: 'https://naver.com',   cat: '뉴스', isDefault: true },
+  { name: 'Claude',  url: 'https://claude.ai',   cat: '업무', isDefault: true },
+  { name: 'Coupang', url: 'https://coupang.com', cat: '쇼핑', isDefault: true },
+];
+
+let sites = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || DEFAULT_SITES;
+let activeCat = '전체';
+let editIndex = -1;
+let editMode = false;
+let dragSrcIndex = null;
+let pwVisible = false;
+
+/* ── Password Change Modal ── */
+function openPwModal() {
+  document.getElementById('pw-current').value = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  document.getElementById('pw-error').textContent = '';
+  document.getElementById('pw-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('pw-current').focus(), 300);
+}
+function closePwModal() { document.getElementById('pw-overlay').classList.remove('open'); }
+function pwOverlayClick(e) { if (e.target === e.currentTarget) closePwModal(); }
+
+function togglePwField(inputId, eyeId) {
+  const inp = document.getElementById(inputId);
+  const eye = document.getElementById(eyeId);
+  const isText = inp.type === 'text';
+  inp.type = isText ? 'password' : 'text';
+  eye.textContent = isText ? '👁' : '🙈';
+}
+
+function changePassword() {
+  const current = document.getElementById('pw-current').value;
+  const newPw = document.getElementById('pw-new').value;
+  const confirm = document.getElementById('pw-confirm').value;
+  const errEl = document.getElementById('pw-error');
+
+  if (current !== getPassword()) {
+    errEl.textContent = '현재 비밀번호가 올바르지 않아요';
+    document.getElementById('pw-current').value = '';
+    document.getElementById('pw-current').focus();
+    return;
+  }
+  if (newPw.length < 4) {
+    errEl.textContent = '새 비밀번호는 4자 이상이어야 해요';
+    return;
+  }
+  if (newPw !== confirm) {
+    errEl.textContent = '새 비밀번호가 일치하지 않아요';
+    document.getElementById('pw-confirm').value = '';
+    document.getElementById('pw-confirm').focus();
+    return;
+  }
+  localStorage.setItem(PW_KEY, newPw);
+  closePwModal();
+  alert('비밀번호가 변경됐어요!');
+}
+
+/* ── Lock / Unlock ── */
+function checkSession() {
+  return localStorage.getItem(SESSION_KEY) === '1';
+}
+
+function tryUnlock() {
+  const val = document.getElementById('lock-input').value;
+  const inp = document.getElementById('lock-input');
+  const err = document.getElementById('lock-error');
+  if (val === getPassword()) {
+    localStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('lock-screen').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    render();
+  } else {
+    err.textContent = '비밀번호가 올바르지 않아요';
+    inp.classList.add('error');
+    inp.value = '';
+    setTimeout(() => inp.classList.remove('error'), 400);
+    setTimeout(() => { err.textContent = ''; }, 2000);
+    inp.focus();
+  }
+}
+
+function lockApp() {
+  localStorage.removeItem(SESSION_KEY);
+  document.getElementById('lock-input').value = '';
+  document.getElementById('lock-error').textContent = '';
+  document.getElementById('lock-screen').classList.remove('hidden');
+  document.getElementById('app').classList.remove('visible');
+  editMode = false;
+}
+
+function togglePw() {
+  pwVisible = !pwVisible;
+  const inp = document.getElementById('lock-input');
+  inp.type = pwVisible ? 'text' : 'password';
+  document.getElementById('lock-eye').textContent = pwVisible ? '🙈' : '👁';
+}
+
+/* ── App init ── */
+if (checkSession()) {
+  document.getElementById('lock-screen').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+  render();
+}
+
+document.getElementById('lock-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryUnlock();
+});
+
+/* ── Data ── */
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(sites)); }
+function getFavicon(url) {
+  try { return 'https://www.google.com/s2/favicons?sz=64&domain=' + new URL(url).hostname; }
+  catch(e) { return ''; }
+}
+function getHost(url) {
+  try { return new URL(url).hostname.replace('www.', ''); } catch(e) { return ''; }
+}
+function getFiltered() {
+  return activeCat === '전체' ? sites : sites.filter(s => s.cat === activeCat);
+}
+
+/* ── Render ── */
+function render() {
+  const allCats = ['전체', ...new Set(sites.map(s => s.cat))];
+  document.getElementById('cats').innerHTML = allCats.map(c =>
+    `<button class="cat-btn${c===activeCat?' active':''}" onclick="setCat('${c}')">${c}</button>`
+  ).join('');
+
+  const filtered = getFiltered();
+  document.getElementById('count').innerHTML = `<strong>${filtered.length}</strong>개의 사이트`;
+
+  const grid = document.getElementById('grid');
+  if (!filtered.length) { grid.innerHTML = '<div class="empty">사이트를 추가해보세요</div>'; return; }
+
+  grid.innerHTML = filtered.map(s => {
+    const ri = sites.indexOf(s);
+    const fav = getFavicon(s.url);
+    const editClass = editMode ? ' edit-mode' : '';
+    const delBtn = !s.isDefault
+      ? `<button class="card-action-btn del-btn" onclick="delSite(event,${ri})" title="삭제">✕</button>`
+      : '';
+    return `<a class="card${editClass}" href="${s.url}" target="_blank" rel="noopener"
+        draggable="${editMode}" data-index="${ri}"
+        ondragstart="onDragStart(event,${ri})" ondragover="onDragOver(event)"
+        ondrop="onDrop(event,${ri})" ondragend="onDragEnd(event)"
+        onclick="cardClick(event,'${s.url}')">
+      <div class="drag-handle" title="드래그로 이동">⠿</div>
+      <div class="card-actions">
+        <button class="card-action-btn edit-btn" onclick="openEdit(event,${ri})" title="수정">✎</button>
+        ${delBtn}
+      </div>
+      <div class="card-icon">${fav?`<img src="${fav}" onerror="this.parentNode.textContent='🔗'">`:'🔗'}</div>
+      <div class="card-name">${s.name}</div>
+      <div class="card-host">${getHost(s.url)}</div>
+      <span class="card-tag">${s.cat}</span>
+    </a>`;
+  }).join('');
+}
+
+function cardClick(e, url) { if (editMode) e.preventDefault(); }
+function setCat(c) { activeCat = c; render(); }
+
+/* ── Edit Mode ── */
+function toggleEditMode() {
+  editMode = !editMode;
+  document.getElementById('edit-btn-text').textContent = editMode ? '완료' : '편집';
+  document.getElementById('edit-toggle-btn').classList.toggle('active', editMode);
+  document.getElementById('edit-hint').classList.toggle('show', editMode);
+  render();
+}
+
+/* ── Drag & Drop ── */
+function onDragStart(e, idx) {
+  if (!editMode) return;
+  dragSrcIndex = idx;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => {
+    const el = document.querySelector(`.card[data-index="${idx}"]`);
+    if (el) el.classList.add('dragging');
+  }, 0);
+}
+function onDragOver(e) {
+  if (!editMode) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('drag-over'));
+  e.currentTarget.classList.add('drag-over');
+}
+function onDrop(e, targetIdx) {
+  if (!editMode || dragSrcIndex === null || dragSrcIndex === targetIdx) return;
+  e.preventDefault();
+  const moved = sites.splice(dragSrcIndex, 1)[0];
+  const newTgt = dragSrcIndex < targetIdx ? targetIdx - 1 : targetIdx;
+  sites.splice(newTgt, 0, moved);
+  save(); dragSrcIndex = null; render();
+}
+function onDragEnd() {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging', 'drag-over'));
+  dragSrcIndex = null;
+}
+
+/* ── Modal ── */
+function openModal() {
+  editIndex = -1;
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-url').value = '';
+  document.getElementById('inp-cat').value = '기타';
+  document.getElementById('modal-title-text').textContent = '사이트 추가';
+  document.getElementById('modal-badge').textContent = 'NEW';
+  document.getElementById('modal-badge').className = 'modal-badge badge-new';
+  document.getElementById('modal-confirm-btn').textContent = '추가하기';
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('inp-name').focus(), 300);
+}
+function openEdit(e, i) {
+  e.preventDefault(); e.stopPropagation();
+  editIndex = i;
+  const s = sites[i];
+  document.getElementById('inp-name').value = s.name;
+  document.getElementById('inp-url').value = s.url;
+  document.getElementById('inp-cat').value = s.cat;
+  document.getElementById('modal-title-text').textContent = '사이트 수정';
+  document.getElementById('modal-badge').textContent = 'EDIT';
+  document.getElementById('modal-badge').className = 'modal-badge badge-edit';
+  document.getElementById('modal-confirm-btn').textContent = '저장하기';
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('inp-name').focus(), 300);
+}
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+function overlayClick(e) { if (e.target === e.currentTarget) closeModal(); }
+function confirmModal() {
+  const name = document.getElementById('inp-name').value.trim();
+  let url = document.getElementById('inp-url').value.trim();
+  const cat = document.getElementById('inp-cat').value;
+  if (!name || !url) return;
+  if (!url.startsWith('http')) url = 'https://' + url;
+  if (editIndex >= 0) {
+    sites[editIndex] = { ...sites[editIndex], name, url, cat };
+  } else {
+    sites.push({ name, url, cat, isDefault: false });
+  }
+  save(); closeModal(); render();
+}
+function delSite(e, i) {
+  e.preventDefault(); e.stopPropagation();
+  if (sites[i].isDefault) return;
+  if (confirm(`"${sites[i].name}"을(를) 삭제할까요?`)) {
+    sites.splice(i, 1); save(); render();
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('overlay').classList.contains('open')) confirmModal();
+});
+</script>
+</body>
+</html>
