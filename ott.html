@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>OTT 모음</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f11;
+    --surface: #18181c;
+    --surface2: #222228;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #f0f0f2;
+    --text-muted: #888890;
+    --text-faint: #44444c;
+    --accent: #c8f04a;
+    --accent-dim: rgba(200,240,74,0.12);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100dvh;
+    padding: 40px 24px 80px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; gap: 12px; }
+  .logo { font-family: 'Gmarket Sans', sans-serif; font-weight: 700; font-size: clamp(20px, 4vw, 28px); letter-spacing: -0.5px; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 16px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); background: var(--surface2);
+    color: var(--text-muted); font-family: 'Gmarket Sans', sans-serif;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    text-decoration: none; transition: all 0.15s;
+  }
+  .back-btn:hover { color: var(--text); border-color: var(--border-hover); }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    text-decoration: none;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 14px;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+    animation: fadeIn 0.2s ease both;
+  }
+  .card:hover { border-color: var(--border-hover); background: var(--surface2); transform: translateY(-2px); }
+  @media (hover: none) { .card:active { background: var(--surface2); border-color: var(--border-hover); transform: scale(0.97); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--surface2); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .card-icon img { width: 40px; height: 40px; object-fit: contain; }
+  .card-name { font-family: 'Gmarket Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
+  .card-host { font-size: 11px; color: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">OTT<span>.</span></div>
+    <a class="back-btn" href="index.html">← 북마크 허브</a>
+  </header>
+
+  <div class="grid">
+    <a class="card" href="https://netflix.com" target="_blank" rel="noopener">
+      <div class="card-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=netflix.com" onerror="this.parentNode.textContent='🎬'"></div>
+      <div class="card-name">넷플릭스</div>
+      <div class="card-host">netflix.com</div>
+    </a>
+    <a class="card" href="https://tving.com" target="_blank" rel="noopener">
+      <div class="card-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=tving.com" onerror="this.parentNode.textContent='🎬'"></div>
+      <div class="card-name">티빙</div>
+      <div class="card-host">tving.com</div>
+    </a>
+    <a class="card" href="https://wavve.com" target="_blank" rel="noopener">
+      <div class="card-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=wavve.com" onerror="this.parentNode.textContent='🎬'"></div>
+      <div class="card-name">웨이브</div>
+      <div class="card-host">wavve.com</div>
+    </a>
+    <a class="card" href="https://disneyplus.com" target="_blank" rel="noopener">
+      <div class="card-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=disneyplus.com" onerror="this.parentNode.textContent='🎬'"></div>
+      <div class="card-name">디즈니+</div>
+      <div class="card-host">disneyplus.com</div>
+    </a>
+    <a class="card" href="https://play.coupang.com" target="_blank" rel="noopener">
+      <div class="card-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=play.coupang.com" onerror="this.parentNode.textContent='🎬'"></div>
+      <div class="card-name">쿠팡플레이</div>
+      <div class="card-host">play.coupang.com</div>
+    </a>
+    <a class="card" href="https://primevideo.com" target="_blank" rel="noopener">
+      <div class="card-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=primevideo.com" onerror="this.parentNode.textContent='🎬'"></div>
+      <div class="card-name">Prime Video</div>
+      <div class="card-host">primevideo.com</div>
+    </a>
+  </div>
+</div>
+</body>
+</html>

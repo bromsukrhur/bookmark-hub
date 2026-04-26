@@ -72,6 +72,12 @@
     "isDefault": false
   },
   {
+    "name": "OTT 모음",
+    "url": "https://bromsukrhur.github.io/bookmark-hub/ott.html",
+    "cat": "일상",
+    "isDefault": false
+  },
+  {
     "name": "넷플릭스",
     "url": "https://netflix.com",
     "cat": "OTT",
