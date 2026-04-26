@@ -2,25 +2,25 @@
   {
     "name": "Google",
     "url": "https://google.com",
-    "cat": "기타",
+    "cat": "일상",
     "isDefault": true
   },
   {
     "name": "GitHub",
     "url": "https://github.com",
-    "cat": "기타",
+    "cat": "업무",
     "isDefault": true
   },
   {
     "name": "YouTube",
     "url": "https://youtube.com",
-    "cat": "엔터",
+    "cat": "취미",
     "isDefault": true
   },
   {
     "name": "Naver",
     "url": "https://naver.com",
-    "cat": "기타",
+    "cat": "일상",
     "isDefault": true
   },
   {
@@ -38,25 +38,25 @@
   {
     "name": "다음",
     "url": "https://daum.net",
-    "cat": "기타",
+    "cat": "일상",
     "isDefault": false
   },
   {
     "name": "밍키",
     "url": "https://mingky03.net/movie/194b6f17f3?page=3",
-    "cat": "개발",
+    "cat": "취미",
     "isDefault": false
   },
   {
     "name": "만화",
     "url": "https://newtoki469.com/webtoon/11116400?sst=as_view&sod=desc&toon=%EC%84%B1%EC%9D%B8%EC%9B%B9%ED%88%B0",
-    "cat": "개발",
+    "cat": "취미",
     "isDefault": false
   },
   {
     "name": "일본",
     "url": "https://missav.ws/dm27/ko/mdyd-913-uncensored-leak",
-    "cat": "개발",
+    "cat": "취미",
     "isDefault": false
   },
   {
@@ -68,7 +68,67 @@
   {
     "name": "메모",
     "url": "https://bromsukrhur.github.io/memo/memo.html",
-    "cat": "기타",
+    "cat": "일상",
+    "isDefault": false
+  },
+  {
+    "name": "넷플릭스",
+    "url": "https://netflix.com",
+    "cat": "OTT",
+    "isDefault": false
+  },
+  {
+    "name": "쿠팡플레이",
+    "url": "https://play.coupang.com",
+    "cat": "OTT",
+    "isDefault": false
+  },
+  {
+    "name": "디즈니+",
+    "url": "https://disneyplus.com",
+    "cat": "OTT",
+    "isDefault": false
+  },
+  {
+    "name": "티빙",
+    "url": "https://tving.com",
+    "cat": "OTT",
+    "isDefault": false
+  },
+  {
+    "name": "웨이브",
+    "url": "https://wavve.com",
+    "cat": "OTT",
+    "isDefault": false
+  },
+  {
+    "name": "Prime Video",
+    "url": "https://primevideo.com",
+    "cat": "OTT",
+    "isDefault": false
+  },
+  {
+    "name": "cook-cooking",
+    "url": "https://bromsukrhur.github.io/cook-cooking",
+    "cat": "취미",
+    "isDefault": false
+  },
+  {
+    "name": "study-alarm",
+    "url": "https://bromsukrhur.github.io/study-alarm",
+    "cat": "학습",
+    "isDefault": false
+  },
+  {
+    "name": "card-tracker",
+    "url": "https://bromsukrhur.github.io/card-tracker",
+    "cat": "일상",
+    "isDefault": false
+  },
+  {
+    "name": "study-Englishword",
+    "url": "https://bromsukrhur.github.io/study-Englishword",
+    "cat": "학습",
     "isDefault": false
   }
 ]

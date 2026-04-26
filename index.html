@@ -344,8 +344,8 @@
     <input id="inp-url" placeholder="https://..." type="url" autocomplete="off" inputmode="url" />
     <label>카테고리</label>
     <select id="inp-cat">
-      <option>업무</option><option>개발</option><option>뉴스</option>
-      <option>쇼핑</option><option>엔터</option><option>기타</option>
+      <option>일상</option><option>업무</option><option>학습</option>
+      <option>취미</option><option>쇼핑</option><option>OTT</option><option>기타</option>
     </select>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">취소</button>
@@ -672,7 +672,7 @@ function openModal() {
   editIndex = -1;
   document.getElementById('inp-name').value = '';
   document.getElementById('inp-url').value = '';
-  document.getElementById('inp-cat').value = '기타';
+  document.getElementById('inp-cat').value = '일상';
   document.getElementById('modal-title-text').textContent = '사이트 추가';
   document.getElementById('modal-badge').textContent = 'NEW';
   document.getElementById('modal-badge').className = 'modal-badge badge-new';
