@@ -3,724 +3,346 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>내 북마크 허브</title>
+<title>My Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #0f0f11;
-    --surface: #18181c;
-    --surface2: #222228;
-    --border: rgba(255,255,255,0.07);
-    --border-hover: rgba(255,255,255,0.15);
-    --text: #f0f0f2;
-    --text-muted: #888890;
-    --text-faint: #44444c;
-    --accent: #c8f04a;
-    --accent-dim: rgba(200,240,74,0.12);
-    --red: #ff5f5f;
-    --red-dim: rgba(255,95,95,0.12);
-    --radius: 14px;
-    --radius-sm: 8px;
+    --bg: #0f0f11; --surface: #18181c; --surface2: #222228;
+    --border: rgba(255,255,255,0.07); --border-hover: rgba(255,255,255,0.15);
+    --text: #f0f0f2; --text-muted: #888890; --text-faint: #44444c;
+    --accent: #c8f04a; --accent-dim: rgba(200,240,74,0.10);
+    --radius: 14px; --radius-sm: 8px;
   }
   html { -webkit-tap-highlight-color: transparent; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans KR', sans-serif;
-    min-height: 100dvh;
-    padding: 40px 24px 80px;
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100dvh; padding: 32px 20px 80px; }
   .container { max-width: 960px; margin: 0 auto; }
 
-  /* ── Lock Screen ── */
-  #lock-screen {
-    position: fixed; inset: 0;
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 999;
-    padding: 24px;
-  }
-  #lock-screen.hidden { display: none; }
+  /* ── HEADER ── */
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 12px; }
+  .logo { font-family: 'Gmarket Sans', sans-serif; font-weight: 700; font-size: clamp(20px,4vw,26px); letter-spacing: -0.5px; }
+  .logo span { color: var(--accent); }
+  .header-right { text-align: right; }
+  .header-date { font-family: 'Gmarket Sans', sans-serif; font-size: 15px; font-weight: 500; color: var(--text); }
+  .header-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-  .lock-box {
+  /* ── WEATHER BAR ── */
+  .weather-bar {
     background: var(--surface);
-    border: 1px solid var(--border-hover);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 40px 32px;
-    width: 100%;
-    max-width: 320px;
-    text-align: center;
-  }
-  .lock-icon {
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    background: var(--accent-dim);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 22px;
-  }
-  .lock-title {
-    font-family: 'Gmarket Sans', sans-serif;
-    font-size: 18px; font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  .lock-sub {
-    font-size: 12px;
-    color: var(--text-muted);
+    padding: 14px 18px;
     margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
   }
-  .lock-input-wrap {
-    position: relative;
-    margin-bottom: 12px;
-  }
-  .lock-input {
-    width: 100%;
-    padding: 12px 44px 12px 16px;
-    font-size: 16px;
-    font-family: 'Noto Sans KR', sans-serif;
+  .w-search-wrap { position: relative; }
+  .w-search-wrap input {
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
+    padding: 8px 12px;
     color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
     outline: none;
-    transition: border-color 0.15s;
-    -webkit-appearance: none;
+    width: 180px;
+    transition: border-color .2s;
   }
-  .lock-input:focus { border-color: var(--accent); }
-  .lock-input.error { border-color: var(--red); animation: shake 0.3s ease; }
-  .lock-input-wrap input { padding-right: 44px; }
-    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; cursor: pointer;
-    color: var(--text-muted); font-size: 16px; padding: 4px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .lock-eye:hover { color: var(--text); }
-  .lock-error {
-    font-size: 12px; color: var(--red);
-    margin-bottom: 16px; min-height: 18px;
-    font-family: 'Gmarket Sans', sans-serif;
-  }
-  .lock-btn {
-    width: 100%;
-    padding: 13px;
-    background: var(--accent);
-    color: #111;
-    border: none;
+  .w-search-wrap input:focus { border-color: var(--accent); }
+  .w-search-wrap input::placeholder { color: var(--text-faint); }
+  .w-suggestions {
+    position: absolute;
+    top: calc(100% + 6px); left: 0;
+    width: 260px;
+    background: var(--surface2);
+    border: 1px solid var(--border-hover);
     border-radius: var(--radius-sm);
+    overflow: hidden;
+    z-index: 200;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  }
+  .w-sug-item { padding: 9px 14px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 13px; transition: background .15s; }
+  .w-sug-item:last-child { border-bottom: none; }
+  .w-sug-item:hover { background: var(--accent-dim); }
+  .w-sug-item .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .w-divider { width: 1px; height: 40px; background: var(--border); flex-shrink: 0; }
+  .w-main { display: flex; align-items: center; gap: 10px; }
+  .w-icon { font-size: 30px; line-height: 1; }
+  .w-temp-block .temp { font-family: 'Gmarket Sans', sans-serif; font-size: 26px; font-weight: 700; line-height: 1; }
+  .w-temp-block .temp span { font-size: 14px; font-weight: 300; color: var(--text-muted); }
+  .w-temp-block .w-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+  .w-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+  .w-stat-item { font-size: 11px; color: var(--text-muted); }
+  .w-stat-item strong { display: block; font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .w-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; font-family: 'Gmarket Sans', sans-serif; }
+  .badge-good    { background: rgba(200,240,74,0.15);  color: #c8f04a; }
+  .badge-normal  { background: rgba(88,166,255,0.15);  color: #58a6ff; }
+  .badge-bad     { background: rgba(255,166,87,0.15);  color: #ffa657; }
+  .badge-verybad { background: rgba(255,100,100,0.15); color: #ff6464; }
+  .w-loading { font-size: 13px; color: var(--text-muted); font-family: 'Gmarket Sans', sans-serif; }
+
+  /* ── CATEGORY SECTION ── */
+  .section { margin-bottom: 32px; }
+  .section-title {
     font-family: 'Gmarket Sans', sans-serif;
-    font-size: 14px; font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
   }
-  .lock-btn:hover { opacity: 0.88; }
-  .lock-btn:active { transform: scale(0.97); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
 
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(6px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
+  /* ── BOOKMARK CARD ── */
+  .bcard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 14px 14px;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: border-color .15s, transform .15s, background .15s;
+    animation: fadeIn .2s ease both;
   }
-
-  /* ── Main App (hidden until unlocked) ── */
-  #app { display: none; }
-  #app.visible { display: block; }
-
-  /* Header */
-  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; gap: 12px; }
-  .logo { font-family: 'Gmarket Sans', sans-serif; font-weight: 700; font-size: clamp(20px, 4vw, 28px); letter-spacing: -0.5px; color: var(--text); flex-shrink: 0; }
-  .logo span { color: var(--accent); }
-
-  .header-btns { display: flex; gap: 8px; flex-shrink: 0; }
-  .hbtn { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border: none; border-radius: var(--radius-sm); font-family: 'Gmarket Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.15s, transform 0.1s; white-space: nowrap; -webkit-user-select: none; user-select: none; }
-  .hbtn:active { transform: scale(0.96); opacity: 0.8; }
-  .hbtn-add { background: var(--accent); color: #111; }
-  .hbtn-add:hover { opacity: 0.88; }
-  .hbtn-edit { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
-  .hbtn-edit:hover { color: var(--text); border-color: var(--border-hover); }
-  .hbtn-edit.active { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,240,74,0.3); }
-  .hbtn-lock { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
-  .hbtn-lock:hover { color: var(--text); border-color: var(--border-hover); }
-
-  /* Categories */
-  .cats-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin: 0 -24px 16px; padding: 0 24px; }
-  .cats-wrap::-webkit-scrollbar { display: none; }
-  .cats { display: flex; gap: 8px; width: max-content; padding-bottom: 2px; }
-  .cat-btn { padding: 7px 16px; border-radius: 999px; font-size: 12px; font-family: 'Gmarket Sans', sans-serif; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.15s; white-space: nowrap; -webkit-user-select: none; user-select: none; }
-  .cat-btn:hover { border-color: var(--border-hover); color: var(--text); }
-  .cat-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
-
-  .count { font-size: 12px; color: var(--text-faint); margin-bottom: 16px; font-family: 'Gmarket Sans', sans-serif; }
-  .count strong { color: var(--accent); font-weight: 700; }
-
-  /* Grid */
-  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
-  @media (max-width: 900px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-  @media (max-width: 540px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; } }
-  @media (max-width: 360px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-
-  /* Card */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 12px 12px; text-decoration: none; display: block; position: relative; transition: border-color 0.15s, background 0.15s, transform 0.15s; animation: fadeIn 0.2s ease both; -webkit-user-select: none; user-select: none; cursor: pointer; }
-  .card:not(.edit-mode):hover { border-color: var(--border-hover); background: var(--surface2); }
-  @media (hover: none) {
-    .card:not(.edit-mode):active { background: var(--surface2); border-color: var(--border-hover); transform: scale(0.97); }
+  .bcard:hover { border-color: var(--border-hover); background: var(--surface2); transform: translateY(-2px); }
+  .bcard-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
   }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .bcard-icon img { width: 28px; height: 28px; object-fit: contain; }
+  .bcard-name { font-family: 'Gmarket Sans', sans-serif; font-size: 13px; font-weight: 500; text-align: center; line-height: 1.3; }
+  .bcard-host { font-size: 10px; color: var(--text-faint); text-align: center; }
 
-  .card.edit-mode { cursor: grab; border-color: var(--border-hover); }
-  .card.edit-mode:active { cursor: grabbing; }
-  .card.dragging { opacity: 0.4; border: 1px dashed var(--accent); background: var(--accent-dim); }
-  .card.drag-over { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+  /* default badge */
+  .bcard.is-default { border-color: rgba(200,240,74,0.2); }
+  .bcard.is-default .bcard-icon { background: var(--accent-dim); }
 
-  .card-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--surface2); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden; font-size: 16px; }
-  .card-icon img { width: 22px; height: 22px; object-fit: contain; }
-  .card-name { font-family: 'Gmarket Sans', sans-serif; font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card-host { font-size: 10px; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; }
-  .card-tag { display: inline-block; font-size: 9px; font-family: 'Gmarket Sans', sans-serif; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-muted); }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-  .card-actions { position: absolute; top: 7px; right: 7px; display: none; gap: 3px; z-index: 2; }
-  .card:hover .card-actions, .card.edit-mode .card-actions { display: flex; }
-  @media (hover: none) { .card.edit-mode .card-actions { display: flex; } }
+  /* stagger */
+  .bcard:nth-child(1){animation-delay:.02s} .bcard:nth-child(2){animation-delay:.04s}
+  .bcard:nth-child(3){animation-delay:.06s} .bcard:nth-child(4){animation-delay:.08s}
+  .bcard:nth-child(5){animation-delay:.10s} .bcard:nth-child(6){animation-delay:.12s}
 
-  .card-action-btn { width: 20px; height: 20px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.1s; line-height: 1; -webkit-user-select: none; user-select: none; }
-  .card-action-btn.edit-btn:hover, .card-action-btn.edit-btn:active { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,240,74,0.3); }
-  .card-action-btn.del-btn:hover, .card-action-btn.del-btn:active { background: var(--red-dim); color: var(--red); border-color: rgba(255,95,95,0.3); }
-
-  .drag-handle { position: absolute; top: 7px; left: 7px; display: none; width: 16px; height: 16px; align-items: center; justify-content: center; color: var(--text-faint); font-size: 10px; cursor: grab; }
-  .card.edit-mode .drag-handle { display: flex; }
-
-  .edit-hint { display: none; background: var(--accent-dim); border: 1px solid rgba(200,240,74,0.2); border-radius: var(--radius-sm); padding: 8px 14px; margin-bottom: 16px; font-size: 12px; font-family: 'Gmarket Sans', sans-serif; color: var(--accent); }
-  .edit-hint.show { display: block; }
-
-  .empty { grid-column: 1/-1; text-align: center; padding: 60px 0; color: var(--text-faint); font-size: 14px; }
-
-  /* Modal */
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.65); display: flex; align-items: flex-end; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding: 0; }
-  .overlay.open { opacity: 1; pointer-events: all; }
-  .modal { background: var(--surface); border: 1px solid var(--border-hover); border-radius: var(--radius) var(--radius) 0 0; padding: 24px 24px 36px; width: 100%; max-width: 480px; transform: translateY(40px); transition: transform 0.25s cubic-bezier(0.34, 1.1, 0.64, 1); }
-  .overlay.open .modal { transform: translateY(0); }
-  @media (min-width: 600px) {
-    .overlay { align-items: center; padding: 24px; }
-    .modal { border-radius: var(--radius); max-width: 360px; padding: 28px; transform: translateY(16px); }
-  }
-  .modal-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border-hover); margin: 0 auto 20px; }
-  @media (min-width: 600px) { .modal-handle { display: none; } }
-  .modal-title { font-family: 'Gmarket Sans', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 20px; color: var(--text); display: flex; align-items: center; gap: 8px; }
-  .modal-badge { font-size: 10px; padding: 3px 8px; border-radius: 999px; font-weight: 500; }
-  .badge-new { background: var(--accent-dim); color: var(--accent); }
-  .badge-edit { background: rgba(100,160,255,0.12); color: #64a0ff; }
-  .modal label { display: block; font-size: 11px; font-family: 'Gmarket Sans', sans-serif; color: var(--text-muted); margin-bottom: 6px; margin-top: 14px; }
-  .modal input, .modal select { width: 100%; padding: 11px 12px; font-size: 16px; font-family: 'Noto Sans KR', sans-serif; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); outline: none; transition: border-color 0.15s; -webkit-appearance: none; appearance: none; }
-  .modal input:focus, .modal select:focus { border-color: var(--accent); }
-  .modal select { background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888890' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-color: var(--surface2); padding-right: 32px; }
-  .modal select option { background: #222228; }
-  .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-  .modal-btns button { flex: 1; padding: 13px; border-radius: var(--radius-sm); font-family: 'Gmarket Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; border: none; -webkit-user-select: none; user-select: none; }
-  .btn-ok { background: var(--accent); color: #111; }
-  .btn-ok:hover { opacity: 0.85; }
-  .btn-cancel { background: var(--surface2); color: var(--text-muted); }
-
-  @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    body { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
-    .modal { padding-bottom: calc(36px + env(safe-area-inset-bottom)); }
-  }
-  @media (min-width: 600px) and (max-width: 900px) { body { padding: 36px 32px 80px; } }
-  @media (min-width: 900px) { body { padding: 48px 40px 80px; } }
+  @media (max-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; } }
 </style>
 </head>
 <body>
+<div class="container">
 
-<!-- Lock Screen -->
-<div id="lock-screen">
-  <div class="lock-box">
-    <div class="lock-icon">🔒</div>
-    <div class="lock-title">북마크 허브</div>
-    <div class="lock-sub">비밀번호를 입력해주세요</div>
-    <div class="lock-input-wrap">
-      <input class="lock-input" id="lock-input" type="password" placeholder="비밀번호" autocomplete="current-password" />
-      <button class="lock-eye" id="lock-eye" onclick="togglePw()" tabindex="-1">👁</button>
+  <header>
+    <div class="logo">My<span>Hub</span></div>
+    <div class="header-right">
+      <div class="header-date" id="hDate"></div>
+      <div class="header-time" id="hTime"></div>
     </div>
-    <div class="lock-error" id="lock-error"></div>
-    <button class="lock-btn" onclick="tryUnlock()">입장하기</button>
-  </div>
-</div>
+  </header>
 
-<!-- Main App -->
-<div id="app">
-  <div class="container">
-    <header>
-      <div class="logo">북마크<span>.</span></div>
-      <div style="display:flex;align-items:center;gap:12px;flex:1;justify-content:flex-end;">
-        <span id="sync-status" style="font-size:11px;font-family:'Gmarket Sans',sans-serif;"></span>
-        <div class="header-btns">
-        <button class="hbtn hbtn-lock" onclick="openTokenModal()" title="GitHub 토큰 설정">🔑</button>
-        <button class="hbtn hbtn-lock" onclick="lockApp()" title="잠금">🔒</button>
-        <button class="hbtn hbtn-edit" id="edit-toggle-btn" onclick="toggleEditMode()">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5l2 2-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-          <span id="edit-btn-text">편집</span>
-        </button>
-        <button class="hbtn hbtn-add" onclick="openModal()">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#111" stroke-width="2.2" stroke-linecap="round"/></svg>
-          추가
-        </button>
-      </div>
-      </div>
-    </header>
-
-    <div class="edit-hint" id="edit-hint">✦ 편집 모드 — 드래그로 순서 변경, ✎ 수정, ✕ 삭제 (기본 사이트는 삭제 불가)</div>
-    <div class="cats-wrap"><div class="cats" id="cats"></div></div>
-    <div class="count" id="count"></div>
-    <div class="grid" id="grid"></div>
-  </div>
-</div>
-
-<!-- Password Change Modal -->
-<div class="overlay" id="pw-overlay" onclick="pwOverlayClick(event)">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">
-      <span>비밀번호 변경</span>
-      <span class="modal-badge" style="background:rgba(100,160,255,0.12);color:#64a0ff">🔑</span>
+  <!-- 날씨 바 -->
+  <div class="weather-bar" id="weatherBar">
+    <div class="w-search-wrap">
+      <input type="text" id="wInput" placeholder="동네, 도시 검색" autocomplete="off" />
+      <div class="w-suggestions" id="wSug" style="display:none;"></div>
     </div>
-    <label>현재 비밀번호</label>
-    <div class="lock-input-wrap">
-      <input id="pw-current" type="password" placeholder="현재 비밀번호" autocomplete="current-password" />
-      <button class="lock-eye" onclick="togglePwField('pw-current','pw-eye-1')" tabindex="-1" id="pw-eye-1">👁</button>
-    </div>
-    <label>새 비밀번호</label>
-    <div class="lock-input-wrap">
-      <input id="pw-new" type="password" placeholder="새 비밀번호" autocomplete="new-password" />
-      <button class="lock-eye" onclick="togglePwField('pw-new','pw-eye-2')" tabindex="-1" id="pw-eye-2">👁</button>
-    </div>
-    <label>새 비밀번호 확인</label>
-    <div class="lock-input-wrap">
-      <input id="pw-confirm" type="password" placeholder="새 비밀번호 재입력" autocomplete="new-password" />
-      <button class="lock-eye" onclick="togglePwField('pw-confirm','pw-eye-3')" tabindex="-1" id="pw-eye-3">👁</button>
-    </div>
-    <div class="lock-error" id="pw-error"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closePwModal()">취소</button>
-      <button class="btn-ok" onclick="changePassword()">변경하기</button>
+    <div class="w-divider"></div>
+    <div id="wContent" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <span class="w-loading">날씨 불러오는 중...</span>
     </div>
   </div>
-</div>
 
-<!-- Token Modal -->
-<div class="overlay" id="token-overlay" onclick="tokenOverlayClick(event)">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">
-      <span>GitHub 토큰 설정</span>
-      <span class="modal-badge" style="background:rgba(200,240,74,0.12);color:var(--accent)">🔑</span>
-    </div>
-    <label>Personal Access Token</label>
-    <div class="lock-input-wrap">
-      <input id="token-input" type="password" placeholder="ghp_..." autocomplete="off" style="width:100%;padding:11px 44px 11px 12px;font-size:14px;font-family:'Noto Sans KR',sans-serif;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);outline:none;" />
-      <button class="lock-eye" onclick="togglePwField('token-input','token-eye')" tabindex="-1" id="token-eye">👁</button>
-    </div>
-    <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">토큰은 이 브라우저에만 저장되며 코드에 포함되지 않아요</div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeTokenModal()">취소</button>
-      <button class="btn-ok" onclick="saveToken()">저장하기</button>
-    </div>
-  </div>
-</div>
+  <!-- 북마크 섹션 (JS가 렌더링) -->
+  <div id="bookmarks"></div>
 
-<!-- Site Modal -->
-<div class="overlay" id="overlay" onclick="overlayClick(event)">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">
-      <span id="modal-title-text">사이트 추가</span>
-      <span class="modal-badge badge-new" id="modal-badge">NEW</span>
-    </div>
-    <label>이름</label>
-    <input id="inp-name" placeholder="예: GitHub" autocomplete="off" />
-    <label>URL</label>
-    <input id="inp-url" placeholder="https://..." type="url" autocomplete="off" inputmode="url" />
-    <label>카테고리</label>
-    <select id="inp-cat">
-      <option>일상</option><option>업무</option><option>학습</option>
-      <option>취미</option><option>쇼핑</option><option>OTT</option><option>기타</option>
-    </select>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal()">취소</button>
-      <button class="btn-ok" id="modal-confirm-btn" onclick="confirmModal()">추가하기</button>
-    </div>
-  </div>
 </div>
 
 <script>
-// ── 비밀번호 ──
-const PW_KEY = 'bhub-pw';
-const SESSION_KEY = 'bhub-auth';
-const STORAGE_KEY = 'bookmark-hub-v2';
+/* ── 시계 ── */
+function tick() {
+  const now = new Date();
+  document.getElementById('hDate').textContent = now.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
+  document.getElementById('hTime').textContent = now.toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+tick(); setInterval(tick, 1000);
 
-function getPassword() {
-  return localStorage.getItem(PW_KEY) || 'zmffhem4.6%';
+/* ── 날씨 ── */
+const WMO = {
+  0:['맑음','☀️'],1:['대체로 맑음','🌤️'],2:['구름 조금','⛅'],3:['흐림','☁️'],
+  45:['안개','🌫️'],48:['안개','🌫️'],
+  51:['이슬비','🌦️'],53:['이슬비','🌦️'],55:['이슬비','🌦️'],
+  61:['비','🌧️'],63:['비','🌧️'],65:['폭우','🌧️'],
+  71:['눈','🌨️'],73:['눈','🌨️'],75:['폭설','❄️'],
+  80:['소나기','🌦️'],81:['소나기','🌦️'],82:['강한 소나기','⛈️'],
+  95:['뇌우','⛈️'],96:['우박','⛈️'],99:['우박','⛈️']
+};
+
+function pmGrade(v, type) {
+  if (type==='pm10') {
+    if (v<=30) return ['좋음','badge-good'];
+    if (v<=80) return ['보통','badge-normal'];
+    if (v<=150) return ['나쁨','badge-bad'];
+    return ['매우나쁨','badge-verybad'];
+  } else {
+    if (v<=15) return ['좋음','badge-good'];
+    if (v<=35) return ['보통','badge-normal'];
+    if (v<=75) return ['나쁨','badge-bad'];
+    return ['매우나쁨','badge-verybad'];
+  }
 }
 
-const DEFAULT_SITES = [
-  { name: 'Google',  url: 'https://google.com',  cat: '기타', isDefault: true },
-  { name: 'GitHub',  url: 'https://github.com',  cat: '개발', isDefault: true },
-  { name: 'YouTube', url: 'https://youtube.com', cat: '엔터', isDefault: true },
-  { name: 'Naver',   url: 'https://naver.com',   cat: '뉴스', isDefault: true },
-  { name: 'Claude',  url: 'https://claude.ai',   cat: '업무', isDefault: true },
-  { name: 'Coupang', url: 'https://coupang.com', cat: '쇼핑', isDefault: true },
+function locLabel(r) {
+  const p = [r.name];
+  if (r.admin2 && r.admin2 !== r.name) p.push(r.admin2);
+  if (r.admin1 && r.admin1 !== r.admin2) p.push(r.admin1);
+  if (r.country) p.push(r.country);
+  return p.join(', ');
+}
+
+async function geoSuggest(q) {
+  const r = await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=6&language=ko');
+  const d = await r.json(); return d.results || [];
+}
+
+async function loadWeather(loc) {
+  const [w, a] = await Promise.all([
+    fetch('https://api.open-meteo.com/v1/forecast?latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relativehumidity_2m,precipitation&timezone=auto').then(r=>r.json()),
+    fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=pm10,pm2_5').then(r=>r.json())
+  ]);
+  const c = w.current;
+  const [desc, icon] = WMO[c.weathercode] || ['--','🌡️'];
+  const pm10 = a.current ? Math.round(a.current.pm10) : null;
+  const pm25 = a.current ? Math.round(a.current.pm2_5) : null;
+  const [l10, c10] = pm10 != null ? pmGrade(pm10,'pm10') : ['--','badge-normal'];
+  const [l25, c25] = pm25 != null ? pmGrade(pm25,'pm25') : ['--','badge-normal'];
+  const dispName = [loc.name, loc.admin2||loc.admin1].filter(Boolean).join(', ');
+
+  document.getElementById('wContent').innerHTML =
+    '<div class="w-main">' +
+      '<div class="w-icon">'+icon+'</div>' +
+      '<div class="w-temp-block">' +
+        '<div class="temp">'+Math.round(c.temperature_2m)+'<span>°C</span></div>' +
+        '<div class="w-desc">'+dispName+' · 체감 '+Math.round(c.apparent_temperature)+'° · '+desc+'</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="w-divider"></div>' +
+    '<div class="w-stats">' +
+      '<div class="w-stat-item"><strong>'+c.relativehumidity_2m+'%</strong>습도</div>' +
+      '<div class="w-stat-item"><strong>'+Math.round(c.windspeed_10m)+' km/h</strong>바람</div>' +
+      '<div class="w-stat-item"><strong>'+c.precipitation+' mm</strong>강수</div>' +
+      '<div class="w-stat-item"><strong>'+( pm10!=null?pm10:'--')+'<span style="font-size:10px;color:var(--text-muted)"> ㎍</span></strong>미세먼지 <span class="w-badge '+c10+'">'+l10+'</span></div>' +
+      '<div class="w-stat-item"><strong>'+(pm25!=null?pm25:'--')+'<span style="font-size:10px;color:var(--text-muted)"> ㎍</span></strong>초미세 <span class="w-badge '+c25+'">'+l25+'</span></div>' +
+    '</div>';
+}
+
+let wDebounce=null, wSelected=null;
+const wInput = document.getElementById('wInput');
+const wSug   = document.getElementById('wSug');
+
+function showSug(results) {
+  if (!results.length) { wSug.style.display='none'; return; }
+  wSug.innerHTML = results.map((r,i)=>'<div class="w-sug-item" data-i="'+i+'"><div>'+r.name+'</div><div class="sub">'+locLabel(r)+'</div></div>').join('');
+  wSug._r = results;
+  wSug.style.display = 'block';
+  wSug.querySelectorAll('.w-sug-item').forEach(el=>{
+    el.addEventListener('mousedown', e=>{ e.preventDefault(); pickLoc(results[+el.dataset.i]); });
+  });
+}
+
+function pickLoc(loc) {
+  wSelected = loc;
+  wInput.value = locLabel(loc);
+  wSug.style.display = 'none';
+  loadWeather(loc);
+}
+
+wInput.addEventListener('input', function() {
+  wSelected = null;
+  clearTimeout(wDebounce);
+  const q = wInput.value.trim();
+  if (q.length < 2) { wSug.style.display='none'; return; }
+  wDebounce = setTimeout(()=>geoSuggest(q).then(showSug), 300);
+});
+wInput.addEventListener('keydown', e=>{ if(e.key==='Enter'&&wSelected) loadWeather(wSelected); if(e.key==='Escape') wSug.style.display='none'; });
+wInput.addEventListener('blur', ()=>setTimeout(()=>wSug.style.display='none', 150));
+
+geoSuggest('Seoul').then(r=>{ if(r.length) pickLoc(r[0]); });
+
+/* ── BOOKMARKS ── */
+const DATA = [
+  {"name":"Google","url":"https://google.com","cat":"일상","isDefault":true},
+  {"name":"GitHub","url":"https://github.com","cat":"업무","isDefault":true},
+  {"name":"YouTube","url":"https://youtube.com","cat":"취미","isDefault":true},
+  {"name":"Naver","url":"https://naver.com","cat":"일상","isDefault":true},
+  {"name":"Claude","url":"https://claude.ai","cat":"업무","isDefault":true},
+  {"name":"Coupang","url":"https://coupang.com","cat":"쇼핑","isDefault":true},
+  {"name":"다음","url":"https://daum.net","cat":"일상","isDefault":false},
+  {"name":"밍키","url":"https://mingky03.net/movie/194b6f17f3?page=3","cat":"취미","isDefault":false},
+  {"name":"만화","url":"https://newtoki469.com/webtoon/11116400?sst=as_view&sod=desc&toon=%EC%84%B1%EC%9D%B8%EC%9B%B9%ED%88%B0","cat":"취미","isDefault":false},
+  {"name":"일본","url":"https://missav.ws/dm27/ko/mdyd-913-uncensored-leak","cat":"취미","isDefault":false},
+  {"name":"wms","url":"https://sso.mk.co.kr/auth/realms/mcp-khan-realm/protocol/openid-connect/auth?client_id=mcp-khan-wms&redirect_uri=https%3A%2F%2Fwms.mk.co.kr&state=4077d3a4-3d91-4548-b91e-4c2d70b2129e&response_mode=fragment&response_type=code&scope=openid&nonce=5c7fbfe6-a74e-4369-aa6c-b01fd499de39","cat":"업무","isDefault":false},
+  {"name":"메모","url":"https://bromsukrhur.github.io/memo/memo.html","cat":"일상","isDefault":false},
+  {"name":"OTT 모음","url":"ott.html","cat":"일상","isDefault":false},
+  {"name":"날씨","url":"https://bromsukrhur.github.io/weather","cat":"일상","isDefault":false},
+  {"name":"넷플릭스","url":"https://netflix.com","cat":"OTT","isDefault":false},
+  {"name":"쿠팡플레이","url":"https://play.coupang.com","cat":"OTT","isDefault":false},
+  {"name":"디즈니+","url":"https://disneyplus.com","cat":"OTT","isDefault":false},
+  {"name":"티빙","url":"https://tving.com","cat":"OTT","isDefault":false},
+  {"name":"웨이브","url":"https://wavve.com","cat":"OTT","isDefault":false},
+  {"name":"Prime Video","url":"https://primevideo.com","cat":"OTT","isDefault":false},
+  {"name":"cook-cooking","url":"https://bromsukrhur.github.io/cook-cooking","cat":"취미","isDefault":false},
+  {"name":"study-alarm","url":"https://bromsukrhur.github.io/study-alarm","cat":"학습","isDefault":false},
+  {"name":"card-tracker","url":"https://bromsukrhur.github.io/card-tracker","cat":"일상","isDefault":false},
+  {"name":"study-Englishword","url":"https://bromsukrhur.github.io/study-Englishword","cat":"학습","isDefault":false}
 ];
 
-let sites = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || DEFAULT_SITES;
-let activeCat = '전체';
-let editIndex = -1;
-let editMode = false;
-let dragSrcIndex = null;
-let pwVisible = false;
+const CAT_ORDER = ['일상','업무','취미','OTT','쇼핑','학습'];
 
-/* ── Token Modal ── */
-function openTokenModal() {
-  document.getElementById('token-input').value = getGHToken();
-  document.getElementById('token-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('token-input').focus(), 300);
-}
-function closeTokenModal() { document.getElementById('token-overlay').classList.remove('open'); }
-function tokenOverlayClick(e) { if (e.target === e.currentTarget) closeTokenModal(); }
-function saveToken() {
-  const token = document.getElementById('token-input').value.trim();
-  if (!token) return;
-  localStorage.setItem(GH_TOKEN_KEY, token);
-  closeTokenModal();
-  ghSha = null;
-  initApp();
+function getDomain(url) {
+  try { return new URL(url).hostname; } catch(e) { return ''; }
 }
 
-/* ── Password Change Modal ── */
-function openPwModal() {
-  document.getElementById('pw-current').value = '';
-  document.getElementById('pw-new').value = '';
-  document.getElementById('pw-confirm').value = '';
-  document.getElementById('pw-error').textContent = '';
-  document.getElementById('pw-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('pw-current').focus(), 300);
-}
-function closePwModal() { document.getElementById('pw-overlay').classList.remove('open'); }
-function pwOverlayClick(e) { if (e.target === e.currentTarget) closePwModal(); }
+function renderBookmarks() {
+  const cats = {};
+  DATA.forEach(item => {
+    if (!cats[item.cat]) cats[item.cat] = [];
+    cats[item.cat].push(item);
+  });
 
-function togglePwField(inputId, eyeId) {
-  const inp = document.getElementById(inputId);
-  const eye = document.getElementById(eyeId);
-  const isText = inp.type === 'text';
-  inp.type = isText ? 'password' : 'text';
-  eye.textContent = isText ? '👁' : '🙈';
-}
-
-function changePassword() {
-  const current = document.getElementById('pw-current').value;
-  const newPw = document.getElementById('pw-new').value;
-  const confirm = document.getElementById('pw-confirm').value;
-  const errEl = document.getElementById('pw-error');
-
-  if (current !== getPassword()) {
-    errEl.textContent = '현재 비밀번호가 올바르지 않아요';
-    document.getElementById('pw-current').value = '';
-    document.getElementById('pw-current').focus();
-    return;
-  }
-  if (newPw.length < 4) {
-    errEl.textContent = '새 비밀번호는 4자 이상이어야 해요';
-    return;
-  }
-  if (newPw !== confirm) {
-    errEl.textContent = '새 비밀번호가 일치하지 않아요';
-    document.getElementById('pw-confirm').value = '';
-    document.getElementById('pw-confirm').focus();
-    return;
-  }
-  localStorage.setItem(PW_KEY, newPw);
-  closePwModal();
-  alert('비밀번호가 변경됐어요!');
-}
-
-/* ── Lock / Unlock ── */
-function checkSession() {
-  return localStorage.getItem(SESSION_KEY) === '1';
-}
-
-function tryUnlock() {
-  const val = document.getElementById('lock-input').value;
-  const inp = document.getElementById('lock-input');
-  const err = document.getElementById('lock-error');
-  if (val === getPassword()) {
-    localStorage.setItem(SESSION_KEY, '1');
-    document.getElementById('lock-screen').classList.add('hidden');
-    document.getElementById('app').classList.add('visible');
-    initApp();
-  } else {
-    err.textContent = '비밀번호가 올바르지 않아요';
-    inp.classList.add('error');
-    inp.value = '';
-    setTimeout(() => inp.classList.remove('error'), 400);
-    setTimeout(() => { err.textContent = ''; }, 2000);
-    inp.focus();
-  }
-}
-
-function lockApp() {
-  localStorage.removeItem(SESSION_KEY);
-  document.getElementById('lock-input').value = '';
-  document.getElementById('lock-error').textContent = '';
-  document.getElementById('lock-screen').classList.remove('hidden');
-  document.getElementById('app').classList.remove('visible');
-  editMode = false;
-}
-
-function togglePw() {
-  pwVisible = !pwVisible;
-  const inp = document.getElementById('lock-input');
-  inp.type = pwVisible ? 'text' : 'password';
-  document.getElementById('lock-eye').textContent = pwVisible ? '🙈' : '👁';
-}
-
-/* ── App init ── */
-async function initApp() {
-  document.getElementById('lock-screen').classList.add('hidden');
-  document.getElementById('app').classList.add('visible');
-  if (!getGHToken()) { render(); openTokenModal(); return; }
-  setSyncStatus('saving');
-  const loaded = await loadFromGitHub();
-  if (!loaded) {
-    const local = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-    if (local && local.length > 0) sites = local;
-  }
-  setSyncStatus('saved');
-  render();
-}
-
-if (checkSession()) {
-  initApp();
-}
-
-document.getElementById('lock-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') tryUnlock();
-});
-
-/* ── GitHub 동기화 설정 ── */
-const GH_TOKEN_KEY = 'bhub-gh-token';
-function getGHToken() { return localStorage.getItem(GH_TOKEN_KEY) || ''; }
-const GH_OWNER  = 'bromsukrhur';
-const GH_REPO   = 'bookmark-hub';
-const GH_FILE   = 'data.json';
-const GH_API    = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
-
-let ghSha = null; // 파일 SHA (업데이트 시 필요)
-let syncStatus = 'idle'; // idle | saving | error
-
-function setSyncStatus(status, msg) {
-  syncStatus = status;
-  const el = document.getElementById('sync-status');
-  if (!el) return;
-  if (status === 'saving') { el.textContent = '⟳ 저장 중...'; el.style.color = 'var(--text-muted)'; }
-  else if (status === 'saved') { el.textContent = '✓ 저장됨'; el.style.color = 'var(--accent)'; setTimeout(() => { el.textContent = ''; }, 2000); }
-  else if (status === 'error') { el.textContent = '⚠ 저장 실패'; el.style.color = 'var(--red)'; }
-}
-
-async function loadFromGitHub() {
-  try {
-    const res = await fetch(GH_API + '?t=' + Date.now(), {
-      headers: { 'Authorization': `token ${getGHToken()}` }
+  const order = [...CAT_ORDER, ...Object.keys(cats).filter(k=>!CAT_ORDER.includes(k))];
+  let html = '';
+  order.forEach(cat => {
+    if (!cats[cat]) return;
+    html += '<div class="section"><div class="section-title">'+cat+'</div><div class="grid">';
+    cats[cat].forEach(item => {
+      const domain = getDomain(item.url);
+      const favicon = domain ? 'https://www.google.com/s2/favicons?sz=64&domain='+domain : '';
+      html +=
+        '<a class="bcard'+(item.isDefault?' is-default':'')+'" href="'+item.url+'" target="_blank" rel="noopener">' +
+          '<div class="bcard-icon">'+(favicon?'<img src="'+favicon+'" onerror="this.parentNode.innerHTML=\'🔗\'">':'🔗')+'</div>' +
+          '<div class="bcard-name">'+item.name+'</div>' +
+          (domain?'<div class="bcard-host">'+domain+'</div>':'') +
+        '</a>';
     });
-    if (!res.ok) return false;
-    const data = await res.json();
-    ghSha = data.sha;
-    const content = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
-    if (Array.isArray(content) && content.length > 0) {
-      sites = content;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
-    }
-    return true;
-  } catch(e) { return false; }
+    html += '</div></div>';
+  });
+  document.getElementById('bookmarks').innerHTML = html;
 }
 
-async function saveToGitHub() {
-  setSyncStatus('saving');
-  try {
-    // SHA 없으면 먼저 가져오기
-    if (!ghSha) {
-      const res = await fetch(GH_API, { headers: { 'Authorization': `token ${getGHToken()}` } });
-      if (res.ok) { const d = await res.json(); ghSha = d.sha; }
-    }
-    const json = JSON.stringify(sites, null, 2);
-    const encoded = btoa(unescape(encodeURIComponent(json)));
-    const body = { message: 'update bookmarks', content: encoded, sha: ghSha };
-    const res = await fetch(GH_API, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${getGHToken()}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    ghSha = data.content.sha;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
-    setSyncStatus('saved');
-  } catch(e) {
-    setSyncStatus('error');
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
-  }
-}
-
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(sites));
-  saveToGitHub();
-}
-
-function getFavicon(url) {
-  try { return 'https://www.google.com/s2/favicons?sz=64&domain=' + new URL(url).hostname; }
-  catch(e) { return ''; }
-}
-function getHost(url) {
-  try { return new URL(url).hostname.replace('www.', ''); } catch(e) { return ''; }
-}
-function getFiltered() {
-  return activeCat === '전체' ? sites : sites.filter(s => s.cat === activeCat);
-}
-
-/* ── Render ── */
-function render() {
-  const allCats = ['전체', ...new Set(sites.map(s => s.cat))];
-  document.getElementById('cats').innerHTML = allCats.map(c =>
-    `<button class="cat-btn${c===activeCat?' active':''}" onclick="setCat('${c}')">${c}</button>`
-  ).join('');
-
-  const filtered = getFiltered();
-  document.getElementById('count').innerHTML = `<strong>${filtered.length}</strong>개의 사이트`;
-
-  const grid = document.getElementById('grid');
-  if (!filtered.length) { grid.innerHTML = '<div class="empty">사이트를 추가해보세요</div>'; return; }
-
-  grid.innerHTML = filtered.map(s => {
-    const ri = sites.indexOf(s);
-    const fav = getFavicon(s.url);
-    const editClass = editMode ? ' edit-mode' : '';
-    const delBtn = !s.isDefault
-      ? `<button class="card-action-btn del-btn" onclick="delSite(event,${ri})" title="삭제">✕</button>`
-      : '';
-    return `<a class="card${editClass}" href="${s.url}" target="_blank" rel="noopener"
-        draggable="${editMode}" data-index="${ri}"
-        ondragstart="onDragStart(event,${ri})" ondragover="onDragOver(event)"
-        ondrop="onDrop(event,${ri})" ondragend="onDragEnd(event)"
-        onclick="cardClick(event,'${s.url}')">
-      <div class="drag-handle" title="드래그로 이동">⠿</div>
-      <div class="card-actions">
-        <button class="card-action-btn edit-btn" onclick="openEdit(event,${ri})" title="수정">✎</button>
-        ${delBtn}
-      </div>
-      <div class="card-icon">${fav?`<img src="${fav}" onerror="this.parentNode.textContent='🔗'">`:'🔗'}</div>
-      <div class="card-name">${s.name}</div>
-      <div class="card-host">${getHost(s.url)}</div>
-      <span class="card-tag">${s.cat}</span>
-    </a>`;
-  }).join('');
-}
-
-function cardClick(e, url) { if (editMode) e.preventDefault(); }
-function setCat(c) { activeCat = c; render(); }
-
-/* ── Edit Mode ── */
-function toggleEditMode() {
-  editMode = !editMode;
-  document.getElementById('edit-btn-text').textContent = editMode ? '완료' : '편집';
-  document.getElementById('edit-toggle-btn').classList.toggle('active', editMode);
-  document.getElementById('edit-hint').classList.toggle('show', editMode);
-  render();
-}
-
-/* ── Drag & Drop ── */
-function onDragStart(e, idx) {
-  if (!editMode) return;
-  dragSrcIndex = idx;
-  e.dataTransfer.effectAllowed = 'move';
-  setTimeout(() => {
-    const el = document.querySelector(`.card[data-index="${idx}"]`);
-    if (el) el.classList.add('dragging');
-  }, 0);
-}
-function onDragOver(e) {
-  if (!editMode) return;
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  document.querySelectorAll('.card').forEach(c => c.classList.remove('drag-over'));
-  e.currentTarget.classList.add('drag-over');
-}
-function onDrop(e, targetIdx) {
-  if (!editMode || dragSrcIndex === null || dragSrcIndex === targetIdx) return;
-  e.preventDefault();
-  const moved = sites.splice(dragSrcIndex, 1)[0];
-  const newTgt = dragSrcIndex < targetIdx ? targetIdx - 1 : targetIdx;
-  sites.splice(newTgt, 0, moved);
-  save(); dragSrcIndex = null; render();
-}
-function onDragEnd() {
-  document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging', 'drag-over'));
-  dragSrcIndex = null;
-}
-
-/* ── Modal ── */
-function openModal() {
-  editIndex = -1;
-  document.getElementById('inp-name').value = '';
-  document.getElementById('inp-url').value = '';
-  document.getElementById('inp-cat').value = '일상';
-  document.getElementById('modal-title-text').textContent = '사이트 추가';
-  document.getElementById('modal-badge').textContent = 'NEW';
-  document.getElementById('modal-badge').className = 'modal-badge badge-new';
-  document.getElementById('modal-confirm-btn').textContent = '추가하기';
-  document.getElementById('overlay').classList.add('open');
-  setTimeout(() => document.getElementById('inp-name').focus(), 300);
-}
-function openEdit(e, i) {
-  e.preventDefault(); e.stopPropagation();
-  editIndex = i;
-  const s = sites[i];
-  document.getElementById('inp-name').value = s.name;
-  document.getElementById('inp-url').value = s.url;
-  document.getElementById('inp-cat').value = s.cat;
-  document.getElementById('modal-title-text').textContent = '사이트 수정';
-  document.getElementById('modal-badge').textContent = 'EDIT';
-  document.getElementById('modal-badge').className = 'modal-badge badge-edit';
-  document.getElementById('modal-confirm-btn').textContent = '저장하기';
-  document.getElementById('overlay').classList.add('open');
-  setTimeout(() => document.getElementById('inp-name').focus(), 300);
-}
-function closeModal() { document.getElementById('overlay').classList.remove('open'); }
-function overlayClick(e) { if (e.target === e.currentTarget) closeModal(); }
-function confirmModal() {
-  const name = document.getElementById('inp-name').value.trim();
-  let url = document.getElementById('inp-url').value.trim();
-  const cat = document.getElementById('inp-cat').value;
-  if (!name || !url) return;
-  if (!url.startsWith('http')) url = 'https://' + url;
-  if (editIndex >= 0) {
-    sites[editIndex] = { ...sites[editIndex], name, url, cat };
-  } else {
-    sites.push({ name, url, cat, isDefault: false });
-  }
-  save(); closeModal(); render();
-}
-function delSite(e, i) {
-  e.preventDefault(); e.stopPropagation();
-  if (sites[i].isDefault) return;
-  if (confirm(`"${sites[i].name}"을(를) 삭제할까요?`)) {
-    sites.splice(i, 1); save(); render();
-  }
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-  if (e.key === 'Enter' && document.getElementById('overlay').classList.contains('open')) confirmModal();
-});
+renderBookmarks();
 </script>
 </body>
 </html>
