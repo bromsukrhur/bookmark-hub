@@ -13,6 +13,7 @@
     --border: rgba(255,255,255,0.07); --border-hover: rgba(255,255,255,0.15);
     --text: #f0f0f2; --text-muted: #888890; --text-faint: #44444c;
     --accent: #c8f04a; --accent-dim: rgba(200,240,74,0.10);
+    --red: #ff5f5f; --red-dim: rgba(255,95,95,0.12);
     --radius: 14px; --radius-sm: 8px;
   }
   html { -webkit-tap-highlight-color: transparent; }
@@ -23,46 +24,38 @@
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 12px; }
   .logo { font-family: 'Gmarket Sans', sans-serif; font-weight: 700; font-size: clamp(20px,4vw,26px); letter-spacing: -0.5px; }
   .logo span { color: var(--accent); }
-  .header-right { text-align: right; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header-clock { text-align: right; }
   .header-date { font-family: 'Gmarket Sans', sans-serif; font-size: 15px; font-weight: 500; color: var(--text); }
   .header-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .add-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: var(--radius-sm);
+    background: var(--accent-dim); border: 1px solid rgba(200,240,74,0.3);
+    color: var(--accent); font-family: 'Gmarket Sans', sans-serif;
+    font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s;
+  }
+  .add-btn:hover { background: rgba(200,240,74,0.2); }
 
   /* ── WEATHER BAR ── */
   .weather-bar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 18px;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 18px; margin-bottom: 28px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
   }
   .w-search-wrap { position: relative; }
   .w-search-wrap input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    color: var(--text);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 13px;
-    outline: none;
-    width: 180px;
-    transition: border-color .2s;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none;
+    width: 180px; transition: border-color .2s;
   }
   .w-search-wrap input:focus { border-color: var(--accent); }
   .w-search-wrap input::placeholder { color: var(--text-faint); }
   .w-suggestions {
-    position: absolute;
-    top: calc(100% + 6px); left: 0;
-    width: 260px;
-    background: var(--surface2);
-    border: 1px solid var(--border-hover);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    z-index: 200;
+    position: absolute; top: calc(100% + 6px); left: 0; width: 260px;
+    background: var(--surface2); border: 1px solid var(--border-hover);
+    border-radius: var(--radius-sm); overflow: hidden; z-index: 200;
     box-shadow: 0 8px 24px rgba(0,0,0,0.7);
   }
   .w-sug-item { padding: 9px 14px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 13px; transition: background .15s; }
@@ -88,58 +81,91 @@
   /* ── CATEGORY SECTION ── */
   .section { margin-bottom: 32px; }
   .section-title {
-    font-family: 'Gmarket Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
+    font-family: 'Gmarket Sans', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint);
+    margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
   }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
 
   /* ── BOOKMARK CARD ── */
+  .bcard-wrap { position: relative; }
   .bcard {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 14px 14px;
-    text-decoration: none;
-    color: var(--text);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 14px 14px;
+    text-decoration: none; color: var(--text);
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
     transition: border-color .15s, transform .15s, background .15s;
-    animation: fadeIn .2s ease both;
+    animation: fadeIn .2s ease both; width: 100%;
   }
   .bcard:hover { border-color: var(--border-hover); background: var(--surface2); transform: translateY(-2px); }
   .bcard-icon {
-    width: 44px; height: 44px;
-    border-radius: 10px;
-    background: var(--surface2);
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
+    width: 44px; height: 44px; border-radius: 10px; background: var(--surface2);
+    display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
   }
   .bcard-icon img { width: 28px; height: 28px; object-fit: contain; }
   .bcard-name { font-family: 'Gmarket Sans', sans-serif; font-size: 13px; font-weight: 500; text-align: center; line-height: 1.3; }
   .bcard-host { font-size: 10px; color: var(--text-faint); text-align: center; }
-
-  /* default badge */
   .bcard.is-default { border-color: rgba(200,240,74,0.2); }
   .bcard.is-default .bcard-icon { background: var(--accent-dim); }
 
-  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+  /* 삭제 버튼 */
+  .del-btn {
+    position: absolute; top: 6px; right: 6px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--red-dim); border: 1px solid rgba(255,95,95,0.3);
+    color: var(--red); font-size: 13px; line-height: 1;
+    cursor: pointer; display: none; align-items: center; justify-content: center;
+    transition: all .15s; z-index: 10;
+  }
+  .bcard-wrap:hover .del-btn { display: flex; }
+  .del-btn:hover { background: var(--red); color: #fff; }
 
-  /* stagger */
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
   .bcard:nth-child(1){animation-delay:.02s} .bcard:nth-child(2){animation-delay:.04s}
   .bcard:nth-child(3){animation-delay:.06s} .bcard:nth-child(4){animation-delay:.08s}
   .bcard:nth-child(5){animation-delay:.10s} .bcard:nth-child(6){animation-delay:.12s}
-
   @media (max-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; } }
+
+  /* ── 모달 ── */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 300; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border-hover);
+    border-radius: 18px; padding: 28px; width: 400px; max-width: 95vw;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    animation: modal-in .2s cubic-bezier(0.34,1.3,0.64,1);
+  }
+  @keyframes modal-in { from { opacity:0; transform:scale(0.94) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+  .modal-title { font-family: 'Gmarket Sans', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 20px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 11px; font-weight: 700; color: var(--text-faint); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; padding: 10px 12px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border-hover); background: var(--surface2);
+    color: var(--text); font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px; outline: none; transition: border-color .2s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .field select option { background: var(--surface2); }
+  .modal-btns { display: flex; gap: 8px; margin-top: 20px; }
+  .btn-cancel {
+    flex: 1; padding: 11px; border-radius: var(--radius-sm);
+    background: var(--surface2); border: 1px solid var(--border-hover);
+    color: var(--text-muted); font-family: 'Gmarket Sans', sans-serif;
+    font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s;
+  }
+  .btn-cancel:hover { color: var(--text); }
+  .btn-save {
+    flex: 2; padding: 11px; border-radius: var(--radius-sm);
+    background: var(--accent); border: none;
+    color: #111; font-family: 'Gmarket Sans', sans-serif;
+    font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity .15s;
+  }
+  .btn-save:hover { opacity: 0.88; }
 </style>
 </head>
 <body>
@@ -148,8 +174,11 @@
   <header>
     <div class="logo">My<span>Hub</span></div>
     <div class="header-right">
-      <div class="header-date" id="hDate"></div>
-      <div class="header-time" id="hTime"></div>
+      <button class="add-btn" onclick="openModal()">＋ 추가</button>
+      <div class="header-clock">
+        <div class="header-date" id="hDate"></div>
+        <div class="header-time" id="hTime"></div>
+      </div>
     </div>
   </header>
 
@@ -165,9 +194,40 @@
     </div>
   </div>
 
-  <!-- 북마크 섹션 (JS가 렌더링) -->
+  <!-- 북마크 섹션 -->
   <div id="bookmarks"></div>
 
+</div>
+
+<!-- 추가 모달 -->
+<div class="overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">북마크 추가</div>
+    <div class="field">
+      <label>이름</label>
+      <input type="text" id="inputName" placeholder="사이트 이름" />
+    </div>
+    <div class="field">
+      <label>URL</label>
+      <input type="text" id="inputUrl" placeholder="https://example.com" />
+    </div>
+    <div class="field">
+      <label>카테고리</label>
+      <select id="inputCat">
+        <option value="일상">일상</option>
+        <option value="업무">업무</option>
+        <option value="취미">취미</option>
+        <option value="OTT">OTT</option>
+        <option value="쇼핑">쇼핑</option>
+        <option value="학습">학습</option>
+        <option value="기타">기타</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-save" onclick="saveBookmark()">저장</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -189,21 +249,15 @@ const WMO = {
   80:['소나기','🌦️'],81:['소나기','🌦️'],82:['강한 소나기','⛈️'],
   95:['뇌우','⛈️'],96:['우박','⛈️'],99:['우박','⛈️']
 };
-
 function pmGrade(v, type) {
   if (type==='pm10') {
-    if (v<=30) return ['좋음','badge-good'];
-    if (v<=80) return ['보통','badge-normal'];
-    if (v<=150) return ['나쁨','badge-bad'];
-    return ['매우나쁨','badge-verybad'];
+    if (v<=30) return ['좋음','badge-good']; if (v<=80) return ['보통','badge-normal'];
+    if (v<=150) return ['나쁨','badge-bad']; return ['매우나쁨','badge-verybad'];
   } else {
-    if (v<=15) return ['좋음','badge-good'];
-    if (v<=35) return ['보통','badge-normal'];
-    if (v<=75) return ['나쁨','badge-bad'];
-    return ['매우나쁨','badge-verybad'];
+    if (v<=15) return ['좋음','badge-good']; if (v<=35) return ['보통','badge-normal'];
+    if (v<=75) return ['나쁨','badge-bad']; return ['매우나쁨','badge-verybad'];
   }
 }
-
 function locLabel(r) {
   const p = [r.name];
   if (r.admin2 && r.admin2 !== r.name) p.push(r.admin2);
@@ -211,12 +265,10 @@ function locLabel(r) {
   if (r.country) p.push(r.country);
   return p.join(', ');
 }
-
 async function geoSuggest(q) {
   const r = await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=6&language=ko');
   const d = await r.json(); return d.results || [];
 }
-
 async function loadWeather(loc) {
   const [w, a] = await Promise.all([
     fetch('https://api.open-meteo.com/v1/forecast?latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relativehumidity_2m,precipitation&timezone=auto').then(r=>r.json()),
@@ -229,118 +281,134 @@ async function loadWeather(loc) {
   const [l10, c10] = pm10 != null ? pmGrade(pm10,'pm10') : ['--','badge-normal'];
   const [l25, c25] = pm25 != null ? pmGrade(pm25,'pm25') : ['--','badge-normal'];
   const dispName = [loc.name, loc.admin2||loc.admin1].filter(Boolean).join(', ');
-
   document.getElementById('wContent').innerHTML =
-    '<div class="w-main">' +
-      '<div class="w-icon">'+icon+'</div>' +
-      '<div class="w-temp-block">' +
-        '<div class="temp">'+Math.round(c.temperature_2m)+'<span>°C</span></div>' +
-        '<div class="w-desc">'+dispName+' · 체감 '+Math.round(c.apparent_temperature)+'° · '+desc+'</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="w-divider"></div>' +
-    '<div class="w-stats">' +
-      '<div class="w-stat-item"><strong>'+c.relativehumidity_2m+'%</strong>습도</div>' +
-      '<div class="w-stat-item"><strong>'+Math.round(c.windspeed_10m)+' km/h</strong>바람</div>' +
-      '<div class="w-stat-item"><strong>'+c.precipitation+' mm</strong>강수</div>' +
-      '<div class="w-stat-item"><strong>'+( pm10!=null?pm10:'--')+'<span style="font-size:10px;color:var(--text-muted)"> ㎍</span></strong>미세먼지 <span class="w-badge '+c10+'">'+l10+'</span></div>' +
-      '<div class="w-stat-item"><strong>'+(pm25!=null?pm25:'--')+'<span style="font-size:10px;color:var(--text-muted)"> ㎍</span></strong>초미세 <span class="w-badge '+c25+'">'+l25+'</span></div>' +
+    '<div class="w-main"><div class="w-icon">'+icon+'</div><div class="w-temp-block">' +
+    '<div class="temp">'+Math.round(c.temperature_2m)+'<span>°C</span></div>' +
+    '<div class="w-desc">'+dispName+' · 체감 '+Math.round(c.apparent_temperature)+'° · '+desc+'</div>' +
+    '</div></div><div class="w-divider"></div><div class="w-stats">' +
+    '<div class="w-stat-item"><strong>'+c.relativehumidity_2m+'%</strong>습도</div>' +
+    '<div class="w-stat-item"><strong>'+Math.round(c.windspeed_10m)+' km/h</strong>바람</div>' +
+    '<div class="w-stat-item"><strong>'+c.precipitation+' mm</strong>강수</div>' +
+    '<div class="w-stat-item"><strong>'+(pm10!=null?pm10:'--')+'<span style="font-size:10px;color:var(--text-muted)"> ㎍</span></strong>미세먼지 <span class="w-badge '+c10+'">'+l10+'</span></div>' +
+    '<div class="w-stat-item"><strong>'+(pm25!=null?pm25:'--')+'<span style="font-size:10px;color:var(--text-muted)"> ㎍</span></strong>초미세 <span class="w-badge '+c25+'">'+l25+'</span></div>' +
     '</div>';
 }
-
 let wDebounce=null, wSelected=null;
 const wInput = document.getElementById('wInput');
 const wSug   = document.getElementById('wSug');
-
 function showSug(results) {
   if (!results.length) { wSug.style.display='none'; return; }
   wSug.innerHTML = results.map((r,i)=>'<div class="w-sug-item" data-i="'+i+'"><div>'+r.name+'</div><div class="sub">'+locLabel(r)+'</div></div>').join('');
-  wSug._r = results;
-  wSug.style.display = 'block';
+  wSug._r = results; wSug.style.display = 'block';
   wSug.querySelectorAll('.w-sug-item').forEach(el=>{
     el.addEventListener('mousedown', e=>{ e.preventDefault(); pickLoc(results[+el.dataset.i]); });
   });
 }
-
-function pickLoc(loc) {
-  wSelected = loc;
-  wInput.value = locLabel(loc);
-  wSug.style.display = 'none';
-  loadWeather(loc);
-}
-
+function pickLoc(loc) { wSelected=loc; wInput.value=locLabel(loc); wSug.style.display='none'; loadWeather(loc); }
 wInput.addEventListener('input', function() {
-  wSelected = null;
-  clearTimeout(wDebounce);
+  wSelected=null; clearTimeout(wDebounce);
   const q = wInput.value.trim();
   if (q.length < 2) { wSug.style.display='none'; return; }
   wDebounce = setTimeout(()=>geoSuggest(q).then(showSug), 300);
 });
 wInput.addEventListener('keydown', e=>{ if(e.key==='Enter'&&wSelected) loadWeather(wSelected); if(e.key==='Escape') wSug.style.display='none'; });
 wInput.addEventListener('blur', ()=>setTimeout(()=>wSug.style.display='none', 150));
-
 geoSuggest('Seoul').then(r=>{ if(r.length) pickLoc(r[0]); });
 
 /* ── BOOKMARKS ── */
-const DATA = [
+// 기본 북마크 (배포본 기본값 - 수정하지 마세요)
+const DEFAULT_DATA = [
   {"name":"Google","url":"https://google.com","cat":"일상","isDefault":true},
   {"name":"GitHub","url":"https://github.com","cat":"업무","isDefault":true},
   {"name":"YouTube","url":"https://youtube.com","cat":"취미","isDefault":true},
   {"name":"Naver","url":"https://naver.com","cat":"일상","isDefault":true},
   {"name":"Claude","url":"https://claude.ai","cat":"업무","isDefault":true},
-  {"name":"Coupang","url":"https://coupang.com","cat":"쇼핑","isDefault":true},
-  {"name":"다음","url":"https://daum.net","cat":"일상","isDefault":false},
-  {"name":"밍키","url":"https://mingky03.net/movie/194b6f17f3?page=3","cat":"취미","isDefault":false},
-  {"name":"만화","url":"https://newtoki469.com/webtoon/11116400?sst=as_view&sod=desc&toon=%EC%84%B1%EC%9D%B8%EC%9B%B9%ED%88%B0","cat":"취미","isDefault":false},
-  {"name":"일본","url":"https://missav.ws/dm27/ko/mdyd-913-uncensored-leak","cat":"취미","isDefault":false},
-  {"name":"wms","url":"https://sso.mk.co.kr/auth/realms/mcp-khan-realm/protocol/openid-connect/auth?client_id=mcp-khan-wms&redirect_uri=https%3A%2F%2Fwms.mk.co.kr&state=4077d3a4-3d91-4548-b91e-4c2d70b2129e&response_mode=fragment&response_type=code&scope=openid&nonce=5c7fbfe6-a74e-4369-aa6c-b01fd499de39","cat":"업무","isDefault":false},
-  {"name":"메모","url":"https://bromsukrhur.github.io/memo/memo.html","cat":"일상","isDefault":false},
-  {"name":"OTT 모음","url":"ott.html","cat":"일상","isDefault":false},
-  {"name":"날씨","url":"https://bromsukrhur.github.io/weather","cat":"일상","isDefault":false},
-  {"name":"넷플릭스","url":"https://netflix.com","cat":"OTT","isDefault":false},
-  {"name":"쿠팡플레이","url":"https://play.coupang.com","cat":"OTT","isDefault":false},
-  {"name":"디즈니+","url":"https://disneyplus.com","cat":"OTT","isDefault":false},
-  {"name":"티빙","url":"https://tving.com","cat":"OTT","isDefault":false},
-  {"name":"웨이브","url":"https://wavve.com","cat":"OTT","isDefault":false},
-  {"name":"Prime Video","url":"https://primevideo.com","cat":"OTT","isDefault":false},
-  {"name":"cook-cooking","url":"https://bromsukrhur.github.io/cook-cooking","cat":"취미","isDefault":false},
-  {"name":"study-alarm","url":"https://bromsukrhur.github.io/study-alarm","cat":"학습","isDefault":false},
-  {"name":"card-tracker","url":"https://bromsukrhur.github.io/card-tracker","cat":"일상","isDefault":false},
-  {"name":"study-Englishword","url":"https://bromsukrhur.github.io/study-Englishword","cat":"학습","isDefault":false}
+  {"name":"Coupang","url":"https://coupang.com","cat":"쇼핑","isDefault":true}
 ];
 
-const CAT_ORDER = ['일상','업무','취미','OTT','쇼핑','학습'];
+const STORAGE_KEY = 'myhub_bookmarks';
+const CAT_ORDER = ['일상','업무','취미','OTT','쇼핑','학습','기타'];
+
+// localStorage에서 추가한 북마크 불러오기
+function getUserBookmarks() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveUserBookmarks(list) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+function getAllData() {
+  return [...DEFAULT_DATA, ...getUserBookmarks()];
+}
 
 function getDomain(url) {
   try { return new URL(url).hostname; } catch(e) { return ''; }
 }
 
 function renderBookmarks() {
+  const all = getAllData();
   const cats = {};
-  DATA.forEach(item => {
+  all.forEach(item => {
     if (!cats[item.cat]) cats[item.cat] = [];
     cats[item.cat].push(item);
   });
-
   const order = [...CAT_ORDER, ...Object.keys(cats).filter(k=>!CAT_ORDER.includes(k))];
   let html = '';
   order.forEach(cat => {
     if (!cats[cat]) return;
     html += '<div class="section"><div class="section-title">'+cat+'</div><div class="grid">';
-    cats[cat].forEach(item => {
+    cats[cat].forEach((item, idx) => {
       const domain = getDomain(item.url);
       const favicon = domain ? 'https://www.google.com/s2/favicons?sz=64&domain='+domain : '';
-      html +=
+      const isUser = !item.isDefault;
+      html += '<div class="bcard-wrap">' +
         '<a class="bcard'+(item.isDefault?' is-default':'')+'" href="'+item.url+'" target="_blank" rel="noopener">' +
           '<div class="bcard-icon">'+(favicon?'<img src="'+favicon+'" onerror="this.parentNode.innerHTML=\'🔗\'">':'🔗')+'</div>' +
           '<div class="bcard-name">'+item.name+'</div>' +
           (domain?'<div class="bcard-host">'+domain+'</div>':'') +
-        '</a>';
+        '</a>' +
+        (isUser ? '<button class="del-btn" onclick="deleteBookmark(\''+item.name+'\',\''+cat+'\',event)" title="삭제">×</button>' : '') +
+      '</div>';
     });
     html += '</div></div>';
   });
   document.getElementById('bookmarks').innerHTML = html;
 }
+
+function deleteBookmark(name, cat, e) {
+  e.preventDefault(); e.stopPropagation();
+  if (!confirm('"'+name+'" 을(를) 삭제할까요?')) return;
+  const list = getUserBookmarks().filter(b => !(b.name===name && b.cat===cat));
+  saveUserBookmarks(list);
+  renderBookmarks();
+}
+
+/* ── 모달 ── */
+function openModal() {
+  document.getElementById('inputName').value = '';
+  document.getElementById('inputUrl').value = '';
+  document.getElementById('inputCat').value = '일상';
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('inputName').focus(), 100);
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function closeModalOutside(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+
+function saveBookmark() {
+  const name = document.getElementById('inputName').value.trim();
+  let url = document.getElementById('inputUrl').value.trim();
+  const cat = document.getElementById('inputCat').value;
+  if (!name) { alert('이름을 입력해주세요'); return; }
+  if (!url) { alert('URL을 입력해주세요'); return; }
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  const list = getUserBookmarks();
+  list.push({ name, url, cat, isDefault: false });
+  saveUserBookmarks(list);
+  closeModal();
+  renderBookmarks();
+}
+
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
 renderBookmarks();
 </script>
