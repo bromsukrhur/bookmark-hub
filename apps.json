@@ -1,0 +1,65 @@
+[
+  {
+    "name": "bookmark-hub",
+    "desc": "북마크 관리",
+    "icon": "🔖",
+    "color": "bg-red",
+    "url": "https://myaitravel.github.io/bookmark-hub"
+  },
+  {
+    "name": "memo",
+    "desc": "메모",
+    "icon": "📝",
+    "color": "bg-blue",
+    "url": "https://myaitravel.github.io/memo"
+  },
+  {
+    "name": "clips",
+    "desc": "클립 관리",
+    "icon": "✂️",
+    "color": "bg-pink",
+    "url": "https://myaitravel.github.io/clips"
+  },
+  {
+    "name": "cook-cooking",
+    "desc": "요리",
+    "icon": "🍳",
+    "color": "bg-orange",
+    "url": "https://myaitravel.github.io/cook-cooking"
+  },
+  {
+    "name": "myaitravel.github.io",
+    "desc": "깃허브 페이지",
+    "icon": "🌐",
+    "color": "bg-indigo",
+    "url": "https://myaitravel.github.io"
+  },
+  {
+    "name": "card-tracker",
+    "desc": "카드 추적",
+    "icon": "💳",
+    "color": "bg-green",
+    "url": "https://myaitravel.github.io/card-tracker"
+  },
+  {
+    "name": "per-radar",
+    "desc": "레이더",
+    "icon": "📡",
+    "color": "bg-purple",
+    "url": "https://myaitravel.github.io/per-radar"
+  },
+  {
+    "name": "study-Englishword",
+    "desc": "영단어 학습",
+    "icon": "📚",
+    "color": "bg-rose",
+    "url": "https://myaitravel.github.io/study-Englishword"
+  },
+  {
+    "name": "stock-english-tutor",
+    "desc": "주식 영어 튜터",
+    "icon": "📈",
+    "color": "bg-lime",
+    "url": "https://myaitravel.github.io/stock-english-tutor"
+  }
+]
