@@ -9,7 +9,6 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
   import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyBzqgFOp5zLxFnUT59r7It-eZlpxq4ScB8",
     authDomain: "clips-97919.firebaseapp.com",
@@ -18,17 +17,12 @@
     messagingSenderId: "316738081229",
     appId: "1:316738081229:web:1154a58277ecc5db107484"
   };
-
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const USER_ID = 'user1';
-
   window.firebaseSaveHub = async function(data) {
-    try {
-      await setDoc(doc(db, 'hubdata', USER_ID), { bookmarks: data });
-    } catch(e) { console.error('Firebase 저장 실패:', e); }
+    try { await setDoc(doc(db, 'hubdata', USER_ID), { bookmarks: data }); } catch(e) { console.error('Firebase 저장 실패:', e); }
   };
-
   window.firebaseLoadHub = async function() {
     try {
       const snap = await getDoc(doc(db, 'hubdata', USER_ID));
@@ -36,7 +30,6 @@
     } catch(e) { console.error('Firebase 로드 실패:', e); }
     return null;
   };
-
   window.firebaseHubReady = true;
   window.dispatchEvent(new Event('firebaseHubReady'));
 </script>
@@ -54,6 +47,26 @@
   body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100dvh; padding: 32px 20px 80px; }
   .container { max-width: 960px; margin: 0 auto; }
 
+  /* ── PIN 잠금화면 ── */
+  #lockscreen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+  #lockscreen.hidden { display: none; }
+  .lock-box { background: var(--surface); border: 1px solid var(--border-hover); border-radius: 20px; padding: 40px 32px; width: 320px; max-width: 95vw; text-align: center; }
+  .lock-icon { font-size: 36px; margin-bottom: 12px; }
+  .lock-title { font-family: 'Gmarket Sans', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .lock-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 28px; }
+  .pin-dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 8px; }
+  .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border-hover); transition: all .15s; }
+  .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+  .pin-dot.error { background: var(--red); border-color: var(--red); }
+  .pin-error { font-size: 12px; color: var(--red); min-height: 20px; margin-bottom: 16px; font-family: 'Gmarket Sans', sans-serif; }
+  .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pin-key { padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-family: 'Gmarket Sans', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; transition: all .15s; }
+  .pin-key:hover { background: var(--accent-dim); border-color: rgba(200,240,74,0.3); color: var(--accent); }
+  .pin-key:active { transform: scale(0.94); }
+  .pin-key.del { font-size: 14px; color: var(--text-muted); }
+  .pin-key.empty { visibility: hidden; pointer-events: none; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
+
   /* ── HEADER ── */
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 12px; }
   .logo { font-family: 'Gmarket Sans', sans-serif; font-weight: 700; font-size: clamp(20px,4vw,26px); letter-spacing: -0.5px; }
@@ -62,36 +75,16 @@
   .header-clock { text-align: right; }
   .header-date { font-family: 'Gmarket Sans', sans-serif; font-size: 15px; font-weight: 500; color: var(--text); }
   .header-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .add-btn {
-    display: flex; align-items: center; gap: 6px;
-    padding: 8px 16px; border-radius: var(--radius-sm);
-    background: var(--accent-dim); border: 1px solid rgba(200,240,74,0.3);
-    color: var(--accent); font-family: 'Gmarket Sans', sans-serif;
-    font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s;
-  }
+  .add-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-sm); background: var(--accent-dim); border: 1px solid rgba(200,240,74,0.3); color: var(--accent); font-family: 'Gmarket Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s; }
   .add-btn:hover { background: rgba(200,240,74,0.2); }
 
   /* ── WEATHER BAR ── */
-  .weather-bar {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 18px; margin-bottom: 28px;
-    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-  }
+  .weather-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 28px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
   .w-search-wrap { position: relative; }
-  .w-search-wrap input {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text);
-    font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none;
-    width: 180px; transition: border-color .2s;
-  }
+  .w-search-wrap input { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 180px; transition: border-color .2s; }
   .w-search-wrap input:focus { border-color: var(--accent); }
   .w-search-wrap input::placeholder { color: var(--text-faint); }
-  .w-suggestions {
-    position: absolute; top: calc(100% + 6px); left: 0; width: 260px;
-    background: var(--surface2); border: 1px solid var(--border-hover);
-    border-radius: var(--radius-sm); overflow: hidden; z-index: 200;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.7);
-  }
+  .w-suggestions { position: absolute; top: calc(100% + 6px); left: 0; width: 260px; background: var(--surface2); border: 1px solid var(--border-hover); border-radius: var(--radius-sm); overflow: hidden; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.7); }
   .w-sug-item { padding: 9px 14px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 13px; transition: background .15s; }
   .w-sug-item:last-child { border-bottom: none; }
   .w-sug-item:hover { background: var(--accent-dim); }
@@ -106,105 +99,86 @@
   .w-stat-item { font-size: 11px; color: var(--text-muted); }
   .w-stat-item strong { display: block; font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
   .w-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; font-family: 'Gmarket Sans', sans-serif; }
-  .badge-good    { background: rgba(200,240,74,0.15);  color: #c8f04a; }
-  .badge-normal  { background: rgba(88,166,255,0.15);  color: #58a6ff; }
-  .badge-bad     { background: rgba(255,166,87,0.15);  color: #ffa657; }
+  .badge-good { background: rgba(200,240,74,0.15); color: #c8f04a; }
+  .badge-normal { background: rgba(88,166,255,0.15); color: #58a6ff; }
+  .badge-bad { background: rgba(255,166,87,0.15); color: #ffa657; }
   .badge-verybad { background: rgba(255,100,100,0.15); color: #ff6464; }
   .w-loading { font-size: 13px; color: var(--text-muted); font-family: 'Gmarket Sans', sans-serif; }
 
   /* ── CATEGORY SECTION ── */
   .section { margin-bottom: 32px; }
-  .section-title {
-    font-family: 'Gmarket Sans', sans-serif; font-size: 11px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint);
-    margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
-  }
+  .section-title { font-family: 'Gmarket Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
 
   /* ── BOOKMARK CARD ── */
   .bcard-wrap { position: relative; }
-  .bcard {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px 14px 14px;
-    text-decoration: none; color: var(--text);
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-    transition: border-color .15s, transform .15s, background .15s;
-    animation: fadeIn .2s ease both; width: 100%;
-  }
+  .bcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 14px 14px; text-decoration: none; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 10px; transition: border-color .15s, transform .15s, background .15s; animation: fadeIn .2s ease both; width: 100%; }
   .bcard:hover { border-color: var(--border-hover); background: var(--surface2); transform: translateY(-2px); }
-  .bcard-icon {
-    width: 44px; height: 44px; border-radius: 10px; background: var(--surface2);
-    display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
-  }
+  .bcard-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--surface2); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
   .bcard-icon img { width: 28px; height: 28px; object-fit: contain; }
   .bcard-name { font-family: 'Gmarket Sans', sans-serif; font-size: 13px; font-weight: 500; text-align: center; line-height: 1.3; }
   .bcard-host { font-size: 10px; color: var(--text-faint); text-align: center; }
   .bcard.is-default { border-color: rgba(200,240,74,0.2); }
   .bcard.is-default .bcard-icon { background: var(--accent-dim); }
-
-  /* 삭제 버튼 */
-  .del-btn {
-    position: absolute; top: 6px; right: 6px;
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--red-dim); border: 1px solid rgba(255,95,95,0.3);
-    color: var(--red); font-size: 13px; line-height: 1;
-    cursor: pointer; display: none; align-items: center; justify-content: center;
-    transition: all .15s; z-index: 10;
-  }
+  .del-btn { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 50%; background: var(--red-dim); border: 1px solid rgba(255,95,95,0.3); color: var(--red); font-size: 13px; cursor: pointer; display: none; align-items: center; justify-content: center; transition: all .15s; z-index: 10; }
   .bcard-wrap:hover .del-btn { display: flex; }
   .del-btn:hover { background: var(--red); color: #fff; }
-
   @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
-  .bcard:nth-child(1){animation-delay:.02s} .bcard:nth-child(2){animation-delay:.04s}
-  .bcard:nth-child(3){animation-delay:.06s} .bcard:nth-child(4){animation-delay:.08s}
-  .bcard:nth-child(5){animation-delay:.10s} .bcard:nth-child(6){animation-delay:.12s}
   @media (max-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; } }
 
   /* ── 모달 ── */
-  .overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-    z-index: 300; display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
-  }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
   .overlay.open { display: flex; }
-  .modal {
-    background: var(--surface); border: 1px solid var(--border-hover);
-    border-radius: 18px; padding: 28px; width: 400px; max-width: 95vw;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
-    animation: modal-in .2s cubic-bezier(0.34,1.3,0.64,1);
-  }
+  .modal { background: var(--surface); border: 1px solid var(--border-hover); border-radius: 18px; padding: 28px; width: 400px; max-width: 95vw; box-shadow: 0 24px 80px rgba(0,0,0,0.6); animation: modal-in .2s cubic-bezier(0.34,1.3,0.64,1); }
   @keyframes modal-in { from { opacity:0; transform:scale(0.94) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
   .modal-title { font-family: 'Gmarket Sans', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 20px; }
   .field { margin-bottom: 14px; }
   .field label { display: block; font-size: 11px; font-weight: 700; color: var(--text-faint); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
-  .field input, .field select {
-    width: 100%; padding: 10px 12px; border-radius: var(--radius-sm);
-    border: 1px solid var(--border-hover); background: var(--surface2);
-    color: var(--text); font-family: 'Noto Sans KR', sans-serif;
-    font-size: 14px; outline: none; transition: border-color .2s;
-  }
+  .field input, .field select { width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-hover); background: var(--surface2); color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 14px; outline: none; transition: border-color .2s; }
   .field input:focus, .field select:focus { border-color: var(--accent); }
   .field select option { background: var(--surface2); }
   .modal-btns { display: flex; gap: 8px; margin-top: 20px; }
-  .btn-cancel {
-    flex: 1; padding: 11px; border-radius: var(--radius-sm);
-    background: var(--surface2); border: 1px solid var(--border-hover);
-    color: var(--text-muted); font-family: 'Gmarket Sans', sans-serif;
-    font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s;
-  }
+  .btn-cancel { flex: 1; padding: 11px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border-hover); color: var(--text-muted); font-family: 'Gmarket Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s; }
   .btn-cancel:hover { color: var(--text); }
-  .btn-save {
-    flex: 2; padding: 11px; border-radius: var(--radius-sm);
-    background: var(--accent); border: none;
-    color: #111; font-family: 'Gmarket Sans', sans-serif;
-    font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity .15s;
-  }
+  .btn-save { flex: 2; padding: 11px; border-radius: var(--radius-sm); background: var(--accent); border: none; color: #111; font-family: 'Gmarket Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity .15s; }
   .btn-save:hover { opacity: 0.88; }
 </style>
 </head>
 <body>
-<div class="container">
 
+<!-- PIN 잠금화면 -->
+<div id="lockscreen">
+  <div class="lock-box">
+    <div class="lock-icon">🔖</div>
+    <div class="lock-title">MyHub</div>
+    <div class="lock-sub" id="lockSub">비밀번호를 입력하세요</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="dot-0"></div>
+      <div class="pin-dot" id="dot-1"></div>
+      <div class="pin-dot" id="dot-2"></div>
+      <div class="pin-dot" id="dot-3"></div>
+      <div class="pin-dot" id="dot-4"></div>
+      <div class="pin-dot" id="dot-5"></div>
+    </div>
+    <div class="pin-error" id="pinError"></div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinInput('1')">1</button>
+      <button class="pin-key" onclick="pinInput('2')">2</button>
+      <button class="pin-key" onclick="pinInput('3')">3</button>
+      <button class="pin-key" onclick="pinInput('4')">4</button>
+      <button class="pin-key" onclick="pinInput('5')">5</button>
+      <button class="pin-key" onclick="pinInput('6')">6</button>
+      <button class="pin-key" onclick="pinInput('7')">7</button>
+      <button class="pin-key" onclick="pinInput('8')">8</button>
+      <button class="pin-key" onclick="pinInput('9')">9</button>
+      <button class="pin-key empty"></button>
+      <button class="pin-key" onclick="pinInput('0')">0</button>
+      <button class="pin-key del" onclick="pinDelete()">⌫</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
   <header>
     <div class="logo">My<span>Hub</span></div>
     <div class="header-right">
@@ -215,8 +189,6 @@
       </div>
     </div>
   </header>
-
-  <!-- 날씨 바 -->
   <div class="weather-bar" id="weatherBar">
     <div class="w-search-wrap">
       <input type="text" id="wInput" placeholder="동네, 도시 검색" autocomplete="off" />
@@ -227,24 +199,15 @@
       <span class="w-loading">날씨 불러오는 중...</span>
     </div>
   </div>
-
-  <!-- 북마크 섹션 -->
   <div id="bookmarks"></div>
-
 </div>
 
 <!-- 추가 모달 -->
 <div class="overlay" id="modalOverlay" onclick="closeModalOutside(event)">
   <div class="modal">
     <div class="modal-title">북마크 추가</div>
-    <div class="field">
-      <label>이름</label>
-      <input type="text" id="inputName" placeholder="사이트 이름" />
-    </div>
-    <div class="field">
-      <label>URL</label>
-      <input type="text" id="inputUrl" placeholder="https://example.com" />
-    </div>
+    <div class="field"><label>이름</label><input type="text" id="inputName" placeholder="사이트 이름" /></div>
+    <div class="field"><label>URL</label><input type="text" id="inputUrl" placeholder="https://example.com" /></div>
     <div class="field">
       <label>카테고리</label>
       <select id="inputCat">
@@ -265,6 +228,64 @@
 </div>
 
 <script>
+/* ── PIN 잠금 ── */
+const PIN_KEY = 'myhub_pin';
+const PIN_LEN = 6;
+var pinBuffer = '';
+var pinMode = 'check';
+
+function initLock() {
+  var saved = localStorage.getItem(PIN_KEY);
+  if (!saved) {
+    pinMode = 'setup';
+    document.getElementById('lockSub').textContent = '사용할 비밀번호 6자리를 설정하세요';
+  } else {
+    pinMode = 'check';
+    document.getElementById('lockSub').textContent = '비밀번호를 입력하세요';
+  }
+}
+function pinInput(num) {
+  if (pinBuffer.length >= PIN_LEN) return;
+  pinBuffer += num;
+  updateDots();
+  if (pinBuffer.length === PIN_LEN) setTimeout(checkPin, 120);
+}
+function pinDelete() {
+  pinBuffer = pinBuffer.slice(0, -1);
+  updateDots();
+}
+function updateDots() {
+  for (var i = 0; i < PIN_LEN; i++) {
+    var d = document.getElementById('dot-' + i);
+    d.classList.toggle('filled', i < pinBuffer.length);
+    d.classList.remove('error');
+  }
+  document.getElementById('pinError').textContent = '';
+}
+function checkPin() {
+  var saved = localStorage.getItem(PIN_KEY);
+  if (pinMode === 'setup') {
+    localStorage.setItem(PIN_KEY, pinBuffer);
+    document.getElementById('lockscreen').classList.add('hidden');
+  } else {
+    if (pinBuffer === saved) {
+      document.getElementById('lockscreen').classList.add('hidden');
+    } else {
+      for (var i = 0; i < PIN_LEN; i++) document.getElementById('dot-' + i).classList.add('error');
+      document.getElementById('pinError').textContent = '비밀번호가 틀렸어요';
+      setTimeout(function() { pinBuffer = ''; updateDots(); }, 600);
+      return;
+    }
+  }
+  pinBuffer = '';
+}
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('lockscreen').classList.contains('hidden')) return;
+  if (e.key >= '0' && e.key <= '9') pinInput(e.key);
+  if (e.key === 'Backspace') pinDelete();
+});
+initLock();
+
 /* ── 시계 ── */
 function tick() {
   const now = new Date();
@@ -276,12 +297,9 @@ tick(); setInterval(tick, 1000);
 /* ── 날씨 ── */
 const WMO = {
   0:['맑음','☀️'],1:['대체로 맑음','🌤️'],2:['구름 조금','⛅'],3:['흐림','☁️'],
-  45:['안개','🌫️'],48:['안개','🌫️'],
-  51:['이슬비','🌦️'],53:['이슬비','🌦️'],55:['이슬비','🌦️'],
-  61:['비','🌧️'],63:['비','🌧️'],65:['폭우','🌧️'],
-  71:['눈','🌨️'],73:['눈','🌨️'],75:['폭설','❄️'],
-  80:['소나기','🌦️'],81:['소나기','🌦️'],82:['강한 소나기','⛈️'],
-  95:['뇌우','⛈️'],96:['우박','⛈️'],99:['우박','⛈️']
+  45:['안개','🌫️'],48:['안개','🌫️'],51:['이슬비','🌦️'],53:['이슬비','🌦️'],55:['이슬비','🌦️'],
+  61:['비','🌧️'],63:['비','🌧️'],65:['폭우','🌧️'],71:['눈','🌨️'],73:['눈','🌨️'],75:['폭설','❄️'],
+  80:['소나기','🌦️'],81:['소나기','🌦️'],82:['강한 소나기','⛈️'],95:['뇌우','⛈️'],96:['우박','⛈️'],99:['우박','⛈️']
 };
 function pmGrade(v, type) {
   if (type==='pm10') {
@@ -350,7 +368,6 @@ wInput.addEventListener('blur', ()=>setTimeout(()=>wSug.style.display='none', 15
 geoSuggest('Seoul').then(r=>{ if(r.length) pickLoc(r[0]); });
 
 /* ── BOOKMARKS ── */
-// 기본 북마크 (배포본 기본값 - 수정하지 마세요)
 const DEFAULT_DATA = [
   {"name":"Google","url":"https://google.com","cat":"일상","isDefault":true},
   {"name":"GitHub","url":"https://github.com","cat":"업무","isDefault":true},
@@ -359,10 +376,7 @@ const DEFAULT_DATA = [
   {"name":"Claude","url":"https://claude.ai","cat":"업무","isDefault":true},
   {"name":"Coupang","url":"https://coupang.com","cat":"쇼핑","isDefault":true}
 ];
-
 const CAT_ORDER = ['일상','업무','취미','OTT','쇼핑','학습','기타'];
-
-// Firebase 기반 북마크 관리
 let userBookmarks = [];
 
 async function loadFromFirebase() {
@@ -372,64 +386,44 @@ async function loadFromFirebase() {
   }
   renderBookmarks();
 }
-
 async function saveToFirebase() {
-  if (window.firebaseSaveHub) {
-    await window.firebaseSaveHub(userBookmarks);
-  }
+  if (window.firebaseSaveHub) await window.firebaseSaveHub(userBookmarks);
 }
+function getAllData() { return [...DEFAULT_DATA, ...userBookmarks]; }
+if (window.firebaseHubReady) { loadFromFirebase(); }
+else { window.addEventListener('firebaseHubReady', loadFromFirebase); }
 
-function getAllData() {
-  return [...DEFAULT_DATA, ...userBookmarks];
-}
-
-// Firebase 준비되면 로드
-if (window.firebaseHubReady) {
-  loadFromFirebase();
-} else {
-  window.addEventListener('firebaseHubReady', loadFromFirebase);
-}
-
-function getDomain(url) {
-  try { return new URL(url).hostname; } catch(e) { return ''; }
-}
-
+function getDomain(url) { try { return new URL(url).hostname; } catch(e) { return ''; } }
 function renderBookmarks() {
   const all = getAllData();
   const cats = {};
-  all.forEach(item => {
-    if (!cats[item.cat]) cats[item.cat] = [];
-    cats[item.cat].push(item);
-  });
+  all.forEach(item => { if (!cats[item.cat]) cats[item.cat] = []; cats[item.cat].push(item); });
   const order = [...CAT_ORDER, ...Object.keys(cats).filter(k=>!CAT_ORDER.includes(k))];
   let html = '';
   order.forEach(cat => {
     if (!cats[cat]) return;
     html += '<div class="section"><div class="section-title">'+cat+'</div><div class="grid">';
-    cats[cat].forEach((item, idx) => {
+    cats[cat].forEach(item => {
       const domain = getDomain(item.url);
       const favicon = domain ? 'https://www.google.com/s2/favicons?sz=64&domain='+domain : '';
-      const isUser = !item.isDefault;
       html += '<div class="bcard-wrap">' +
         '<a class="bcard'+(item.isDefault?' is-default':'')+'" href="'+item.url+'" target="_blank" rel="noopener">' +
           '<div class="bcard-icon">'+(favicon?'<img src="'+favicon+'" onerror="this.parentNode.innerHTML=\'🔗\'">':'🔗')+'</div>' +
           '<div class="bcard-name">'+item.name+'</div>' +
           (domain?'<div class="bcard-host">'+domain+'</div>':'') +
         '</a>' +
-        (isUser ? '<button class="del-btn" onclick="deleteBookmark(\''+item.name+'\',\''+cat+'\',event)" title="삭제">×</button>' : '') +
+        (!item.isDefault ? '<button class="del-btn" onclick="deleteBookmark(\''+item.name+'\',\''+cat+'\',event)" title="삭제">×</button>' : '') +
       '</div>';
     });
     html += '</div></div>';
   });
   document.getElementById('bookmarks').innerHTML = html;
 }
-
 function deleteBookmark(name, cat, e) {
   e.preventDefault(); e.stopPropagation();
   if (!confirm('"'+name+'" 을(를) 삭제할까요?')) return;
   userBookmarks = userBookmarks.filter(b => !(b.name===name && b.cat===cat));
-  saveToFirebase();
-  renderBookmarks();
+  saveToFirebase(); renderBookmarks();
 }
 
 /* ── 모달 ── */
@@ -442,7 +436,6 @@ function openModal() {
 }
 function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
 function closeModalOutside(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
-
 function saveBookmark() {
   const name = document.getElementById('inputName').value.trim();
   let url = document.getElementById('inputUrl').value.trim();
@@ -451,12 +444,12 @@ function saveBookmark() {
   if (!url) { alert('URL을 입력해주세요'); return; }
   if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
   userBookmarks.push({ name, url, cat, isDefault: false });
-  saveToFirebase();
-  closeModal();
-  renderBookmarks();
+  saveToFirebase(); closeModal(); renderBookmarks();
 }
-
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lockscreen').classList.contains('hidden')) return;
+  if (e.key === 'Escape') closeModal();
+});
 </script>
 </body>
 </html>
