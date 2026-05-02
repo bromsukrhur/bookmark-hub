@@ -6,6 +6,40 @@
 <title>My Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBzqgFOp5zLxFnUT59r7It-eZlpxq4ScB8",
+    authDomain: "clips-97919.firebaseapp.com",
+    projectId: "clips-97919",
+    storageBucket: "clips-97919.firebasestorage.app",
+    messagingSenderId: "316738081229",
+    appId: "1:316738081229:web:1154a58277ecc5db107484"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const USER_ID = 'user1';
+
+  window.firebaseSaveHub = async function(data) {
+    try {
+      await setDoc(doc(db, 'hubdata', USER_ID), { bookmarks: data });
+    } catch(e) { console.error('Firebase 저장 실패:', e); }
+  };
+
+  window.firebaseLoadHub = async function() {
+    try {
+      const snap = await getDoc(doc(db, 'hubdata', USER_ID));
+      if (snap.exists()) return snap.data().bookmarks || [];
+    } catch(e) { console.error('Firebase 로드 실패:', e); }
+    return null;
+  };
+
+  window.firebaseHubReady = true;
+  window.dispatchEvent(new Event('firebaseHubReady'));
+</script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -326,19 +360,34 @@ const DEFAULT_DATA = [
   {"name":"Coupang","url":"https://coupang.com","cat":"쇼핑","isDefault":true}
 ];
 
-const STORAGE_KEY = 'myhub_bookmarks';
 const CAT_ORDER = ['일상','업무','취미','OTT','쇼핑','학습','기타'];
 
-// localStorage에서 추가한 북마크 불러오기
-function getUserBookmarks() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; }
+// Firebase 기반 북마크 관리
+let userBookmarks = [];
+
+async function loadFromFirebase() {
+  if (window.firebaseLoadHub) {
+    const data = await window.firebaseLoadHub();
+    if (data) userBookmarks = data;
+  }
+  renderBookmarks();
 }
-function saveUserBookmarks(list) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+
+async function saveToFirebase() {
+  if (window.firebaseSaveHub) {
+    await window.firebaseSaveHub(userBookmarks);
+  }
 }
 
 function getAllData() {
-  return [...DEFAULT_DATA, ...getUserBookmarks()];
+  return [...DEFAULT_DATA, ...userBookmarks];
+}
+
+// Firebase 준비되면 로드
+if (window.firebaseHubReady) {
+  loadFromFirebase();
+} else {
+  window.addEventListener('firebaseHubReady', loadFromFirebase);
 }
 
 function getDomain(url) {
@@ -378,8 +427,8 @@ function renderBookmarks() {
 function deleteBookmark(name, cat, e) {
   e.preventDefault(); e.stopPropagation();
   if (!confirm('"'+name+'" 을(를) 삭제할까요?')) return;
-  const list = getUserBookmarks().filter(b => !(b.name===name && b.cat===cat));
-  saveUserBookmarks(list);
+  userBookmarks = userBookmarks.filter(b => !(b.name===name && b.cat===cat));
+  saveToFirebase();
   renderBookmarks();
 }
 
@@ -401,16 +450,13 @@ function saveBookmark() {
   if (!name) { alert('이름을 입력해주세요'); return; }
   if (!url) { alert('URL을 입력해주세요'); return; }
   if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-  const list = getUserBookmarks();
-  list.push({ name, url, cat, isDefault: false });
-  saveUserBookmarks(list);
+  userBookmarks.push({ name, url, cat, isDefault: false });
+  saveToFirebase();
   closeModal();
   renderBookmarks();
 }
 
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
-
-renderBookmarks();
 </script>
 </body>
 </html>
